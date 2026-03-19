@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // ─── Inline SVG Icons (small, consistent sizes) ────────────
 const icons = {
   brain: (cls: string) => (
@@ -57,7 +59,7 @@ function Navbar() {
         </div>
         <div className="flex items-center gap-2">
           <button className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5">Log In</button>
-          <button className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium">Get Started Free</button>
+          <Link href="/extract" className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium">Get Started Free</Link>
         </div>
       </div>
     </nav>
@@ -86,10 +88,10 @@ function HeroSection() {
         </p>
 
         <div className="flex items-center justify-center gap-3 mb-6">
-          <button className="group flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
+          <Link href="/extract" className="group flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
             Start Building Your Brain
             {icons.arrow("w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform")}
-          </button>
+          </Link>
           <button className="flex items-center gap-1.5 text-gray-300 hover:text-white px-5 py-2 rounded-full text-sm border border-white/10 hover:border-white/20 transition-all">
             Watch Demo
             {icons.play("w-3.5 h-3.5")}
@@ -249,7 +251,7 @@ function PricingSection() {
               <li>&#10003; Smart search</li>
               <li className="text-gray-600">&#10003; Connection mapping</li>
             </ul>
-            <button className="w-full py-1.5 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-medium transition-colors">Get Started</button>
+            <Link href="/extract" className="block w-full py-1.5 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-medium transition-colors text-center">Get Started</Link>
           </div>
           {/* Pro */}
           <div className="rounded-xl border-2 border-violet-500/40 bg-gradient-to-br from-violet-500/10 to-indigo-500/5 p-4 relative">
@@ -301,10 +303,10 @@ function CTASection() {
         <p className="text-xs text-gray-400 mb-4 max-w-sm mx-auto">
           Join thousands using ContextMe as their AI-powered second brain. Free to start.
         </p>
-        <button className="group inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
+        <Link href="/extract" className="group inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
           Get Started for Free
           {icons.arrow("w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform")}
-        </button>
+        </Link>
       </div>
     </section>
   );
