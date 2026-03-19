@@ -109,9 +109,9 @@ export async function POST(request: Request) {
       }
 
       htmlContent = await response.text();
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
       clearTimeout(timeout);
-      if (fetchError.name === "AbortError") {
+      if (fetchError instanceof Error && fetchError.name === "AbortError") {
         return NextResponse.json(
           { success: false, error: "Request timed out. The website took too long to respond." },
           { status: 408 }
@@ -174,7 +174,7 @@ Return ONLY valid JSON. No other text.`,
     }
 
     // 6. Parse AI response
-    let insights: any;
+    let insights: { title?: string; summary?: string; keyPoints?: string[]; tags?: string[] };
     try {
       insights = JSON.parse(aiResponse);
     } catch {
@@ -194,7 +194,7 @@ Return ONLY valid JSON. No other text.`,
     };
 
     return NextResponse.json({ success: true, data: result });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Extract API error:", error);
     return NextResponse.json(
       { success: false, error: "An unexpected error occurred. Please try again." },
