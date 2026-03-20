@@ -123,12 +123,49 @@ export async function POST(request: Request) {
       );
     }
 
-    // 4. Extract text from HTML
+    // 4. Check for error pages before extracting text
+    // Detect error pages by HTTP status codes in title/heading or common error patterns
+    const errorPagePatterns = [
+      /<title[^>]*>[^<]*(404|not found|page not found|error|403|forbidden|500|server error|unavailable|does not exist|couldn't find|page missing)[^<]*<\/title>/i,
+      /<h1[^>]*>[^<]*(404|not found|page not found|error|forbidden|unavailable)[^<]*<\/h1>/i,
+      /<h2[^>]*>[^<]*(404|not found|page not found|error)[^<]*<\/h2>/i,
+    ];
+
+    const isErrorPage = errorPagePatterns.some((pattern) => pattern.test(htmlContent));
+    if (isErrorPage) {
+      return NextResponse.json(
+        { success: false, error: "This URL leads to an error page (404/Not Found). Please check the link and try again." },
+        { status: 400 }
+      );
+    }
+
+    // Also check if the page is a login/auth wall
+    const authPatterns = [
+      /(<title[^>]*>[^<]*(sign in|log in|login|sign up|register|authentication)[^<]*<\/title>)/i,
+    ];
+    const isAuthPage = authPatterns.some((pattern) => pattern.test(htmlContent));
+    if (isAuthPage) {
+      return NextResponse.json(
+        { success: false, error: "This URL requires login/authentication. We can't extract content from protected pages." },
+        { status: 400 }
+      );
+    }
+
+    // 5. Extract text from HTML
     let textContent = extractTextFromHtml(htmlContent);
 
     if (textContent.length < 100) {
       return NextResponse.json(
         { success: false, error: "Not enough content found on this page to extract insights." },
+        { status: 400 }
+      );
+    }
+
+    // Check for very low content-to-noise ratio (likely not a real article)
+    const wordCount = textContent.split(/\s+/).length;
+    if (wordCount < 50) {
+      return NextResponse.json(
+        { success: false, error: "Not enough meaningful content found on this page. Try a different URL with more text content." },
         { status: 400 }
       );
     }
@@ -150,7 +187,12 @@ export async function POST(request: Request) {
         {
           role: "system",
           content: `You are an expert content analyst. Given the text content from a web page, extract detailed and accurate structured insights.
-Return a JSON object with exactly these fields:
+
+IMPORTANT: First, determine if this is actual article/blog/meaningful content. If the text appears to be an error page (404, 500, "page not found"), a login/signup page, a cookie consent page, mostly navigation/menu text, or otherwise NOT a real article with substantial content, then return:
+{"isErrorPage": true, "error": "Brief description of why this isn't extractable content"}
+
+If it IS real content, return a JSON object with exactly these fields:
+- "isErrorPage": false
 - "title": The main title or topic of the content (string)
 - "summary": A detailed 4-6 sentence summary that captures the main argument, key findings, and conclusion. Be specific with names, numbers, and facts mentioned in the content. (string)
 - "keyPoints": An array of 5-7 key insights or takeaways. Each point should be a detailed sentence, not just a phrase. Include specific details, data points, or examples from the content. (string[])
@@ -174,13 +216,21 @@ Return ONLY valid JSON. No other text.`,
     }
 
     // 6. Parse AI response
-    let insights: { title?: string; summary?: string; keyPoints?: string[]; tags?: string[] };
+    let insights: { isErrorPage?: boolean; error?: string; title?: string; summary?: string; keyPoints?: string[]; tags?: string[] };
     try {
       insights = JSON.parse(aiResponse);
     } catch {
       return NextResponse.json(
         { success: false, error: "Failed to parse AI response. Please try again." },
         { status: 500 }
+      );
+    }
+
+    // Check if AI detected this as an error/non-content page
+    if (insights.isErrorPage) {
+      return NextResponse.json(
+        { success: false, error: insights.error || "This page doesn't contain extractable article content. Please try a different URL." },
+        { status: 400 }
       );
     }
 
