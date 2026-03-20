@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
-// ─── Types ──────────────────────────────────────────────────
-interface ExtractedInsights {
-  title: string;
-  summary: string;
-  keyPoints: string[];
-  tags: string[];
-  sourceUrl: string;
-}
+import { ExtractedInsights } from "@/lib/types";
+import { saveToHistory } from "@/lib/history";
 
 // ─── Icons ──────────────────────────────────────────────────
 const icons = {
@@ -57,9 +50,9 @@ function Navbar() {
           {icons.brain("w-5 h-5 text-violet-400")}
           <span className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">ContextMe</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <button className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5">Log In</button>
-          <button className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium">Sign Up</button>
+        <div className="flex items-center gap-4 text-xs text-gray-400">
+          <Link href="/extract" className="text-violet-400 font-medium">Extract</Link>
+          <Link href="/history" className="hover:text-white transition-colors">History</Link>
         </div>
       </div>
     </nav>
@@ -170,6 +163,7 @@ export default function ExtractPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<ExtractedInsights | null>(null);
+  const [savedToast, setSavedToast] = useState(false);
 
   async function handleExtract(e: React.FormEvent) {
     e.preventDefault();
@@ -200,6 +194,10 @@ export default function ExtractPage() {
 
       if (data.success) {
         setResult(data.data);
+        // Auto-save to history
+        saveToHistory(data.data);
+        setSavedToast(true);
+        setTimeout(() => setSavedToast(false), 3000);
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
@@ -282,6 +280,17 @@ export default function ExtractPage() {
           )}
         </div>
       </section>
+
+      {/* Saved Toast */}
+      {savedToast && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-xs font-medium animate-fade-in">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+          </svg>
+          Saved to history
+          <Link href="/history" className="underline hover:text-green-300 transition-colors">View</Link>
+        </div>
+      )}
 
       {/* Results or Loading */}
       {loading && <LoadingSkeleton />}

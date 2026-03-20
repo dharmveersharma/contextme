@@ -56,6 +56,7 @@ function Navbar() {
           <a href="#features" className="hover:text-white transition-colors">Features</a>
           <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
           <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+          <Link href="/history" className="hover:text-white transition-colors">History</Link>
         </div>
         <div className="flex items-center gap-2">
           <button className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5">Log In</button>
