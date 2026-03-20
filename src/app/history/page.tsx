@@ -10,6 +10,7 @@ import {
   clearHistory,
   formatRelativeTime,
 } from "@/lib/history";
+import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
 
 // ─── Icons ──────────────────────────────────────────────────
 const icons = {
@@ -108,6 +109,7 @@ function HistoryCard({
   onDelete: () => void;
 }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [copiedToast, setCopiedToast] = useState(false);
 
   return (
     <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent transition-all hover:border-violet-500/25">
@@ -200,24 +202,65 @@ function HistoryCard({
             </div>
           )}
 
-          {/* Source URL + Actions */}
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-1.5 min-w-0 flex-1">
-              {icons.link("w-3 h-3 text-gray-500 shrink-0")}
-              <a
-                href={item.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate"
-                onClick={(e) => e.stopPropagation()}
+          {/* Source URL */}
+          <div className="flex items-center gap-1.5 pt-1">
+            {icons.link("w-3 h-3 text-gray-500 shrink-0")}
+            <a
+              href={item.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {item.sourceUrl}
+            </a>
+          </div>
+
+          {/* Export + Delete Actions */}
+          <div className="flex items-center justify-between pt-2" onClick={(e) => e.stopPropagation()}>
+            {/* Export Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  const ok = await copyToClipboard(item);
+                  if (ok) {
+                    setCopiedToast(true);
+                    setTimeout(() => setCopiedToast(false), 2000);
+                  }
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
+                title="Copy to clipboard"
               >
-                {item.sourceUrl}
-              </a>
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
+                </svg>
+                Copy
+              </button>
+              <button
+                onClick={() => downloadAsMarkdown(item)}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
+                title="Download as Markdown"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                Markdown
+              </button>
+              <button
+                onClick={() => printAsPdf(item)}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
+                title="Download as PDF"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                PDF
+              </button>
             </div>
 
             {/* Delete Button */}
             {showDeleteConfirm ? (
-              <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 shrink-0">
                 <span className="text-[10px] text-red-400">Delete?</span>
                 <button
                   onClick={() => {
@@ -237,10 +280,7 @@ function HistoryCard({
               </div>
             ) : (
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDeleteConfirm(true);
-                }}
+                onClick={() => setShowDeleteConfirm(true)}
                 className="shrink-0 p-1.5 rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-all"
                 title="Delete this item"
               >
@@ -248,6 +288,16 @@ function HistoryCard({
               </button>
             )}
           </div>
+
+          {/* Copied Toast inside card */}
+          {copiedToast && (
+            <div className="flex items-center gap-1.5 text-green-400 text-[10px] font-medium pt-1">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              </svg>
+              Copied to clipboard!
+            </div>
+          )}
         </div>
       )}
     </div>
