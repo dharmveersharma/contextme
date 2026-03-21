@@ -290,7 +290,7 @@ export default function ExtractPage() {
             </span>
           </h1>
           <p className="text-sm text-gray-400 mb-6">
-            Paste an article, blog post, or YouTube video — AI will extract the key takeaways instantly.
+            Paste an article, blog post, or web page — AI will extract the key takeaways instantly.
           </p>
 
           {/* URL Input Form */}
@@ -303,7 +303,7 @@ export default function ExtractPage() {
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste an article URL or YouTube link..."
+                placeholder="Paste a URL to extract insights..."
                 disabled={loading}
                 className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all disabled:opacity-50"
               />
@@ -360,7 +360,7 @@ export default function ExtractPage() {
           <div className="rounded-xl border border-dashed border-white/10 p-8">
             {icons.brain("w-10 h-10 text-gray-700 mx-auto mb-3")}
             <p className="text-sm text-gray-600 mb-1">Your insights will appear here</p>
-            <p className="text-xs text-gray-700">Try pasting a blog post, news article, or YouTube video URL above</p>
+            <p className="text-xs text-gray-700">Try pasting a blog post, news article, or any web page URL above</p>
           </div>
         </div>
       )}

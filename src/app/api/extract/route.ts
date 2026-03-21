@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { isYouTubeUrl, extractVideoId, fetchYouTubeTranscript } from "@/lib/youtube";
 
 interface ExtractedInsights {
   title: string;
@@ -86,136 +85,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // ─── YouTube Branch ─────────────────────────────────────────
-    if (isYouTubeUrl(url)) {
-      const videoId = extractVideoId(url);
-      if (!videoId) {
-        return NextResponse.json(
-          { success: false, error: "Could not extract video ID from this YouTube URL. Please check the link." },
-          { status: 400 }
-        );
-      }
-
-      // Fetch transcript
-      let transcriptText: string;
-      try {
-        const segments = await fetchYouTubeTranscript(videoId);
-
-        if (!segments || segments.length === 0) {
-          return NextResponse.json(
-            { success: false, error: "No transcript found for this video. The video may not have captions available." },
-            { status: 400 }
-          );
-        }
-
-        transcriptText = segments.map((s) => s.text).join(" ");
-      } catch (transcriptError: unknown) {
-        const errMsg = transcriptError instanceof Error ? transcriptError.message.toLowerCase() : "";
-
-        if (errMsg.includes("disabled")) {
-          return NextResponse.json(
-            { success: false, error: "Transcripts are disabled for this video by the creator." },
-            { status: 400 }
-          );
-        }
-        if (errMsg.includes("no longer available")) {
-          return NextResponse.json(
-            { success: false, error: "This video is unavailable or has been removed." },
-            { status: 400 }
-          );
-        }
-        if (errMsg.includes("too many requests") || errMsg.includes("captcha")) {
-          return NextResponse.json(
-            { success: false, error: "Too many requests to YouTube. Please try again in a moment." },
-            { status: 429 }
-          );
-        }
-        if (errMsg.includes("no transcripts") || errMsg.includes("not available")) {
-          return NextResponse.json(
-            { success: false, error: "No transcript/captions available for this video. Some videos restrict transcript access from servers." },
-            { status: 400 }
-          );
-        }
-        return NextResponse.json(
-          { success: false, error: "Could not fetch transcript for this video. Some videos restrict transcript access — try a different video." },
-          { status: 400 }
-        );
-      }
-
-      // Check minimum content
-      const wordCount = transcriptText.split(/\s+/).length;
-      if (wordCount < 30) {
-        return NextResponse.json(
-          { success: false, error: "Not enough transcript content to extract meaningful insights." },
-          { status: 400 }
-        );
-      }
-
-      // Truncate to ~6000 characters to save tokens
-      if (transcriptText.length > 6000) {
-        transcriptText = transcriptText.substring(0, 6000) + "...";
-      }
-
-      // Call OpenAI with video-specific prompt
-      const openai = new OpenAI({ apiKey });
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        max_tokens: 1500,
-        temperature: 0.3,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert content analyst. You are given a transcript from a YouTube video (auto-generated captions of spoken content). The transcript may contain filler words, repetition, informal language, or minor transcription errors — this is normal for spoken content.
-
-Your job is to extract clear, structured insights from the spoken content.
-
-Return a JSON object with exactly these fields:
-- "title": A clear, descriptive title for the video based on its content (string)
-- "summary": A detailed 4-6 sentence summary of what the video covers. Capture the main topic, key arguments, and conclusions. Be specific with names, numbers, and facts mentioned. (string)
-- "keyPoints": An array of 5-7 key insights or takeaways from the video. Each point should be a detailed sentence, not just a phrase. Include specific details, data points, or examples mentioned. (string[])
-- "tags": An array of 4-8 relevant topic tags, lowercase (string[])
-
-Return ONLY valid JSON. No other text.`,
-          },
-          {
-            role: "user",
-            content: `Extract insights from this YouTube video transcript:\n\n${transcriptText}`,
-          },
-        ],
-      });
-
-      const aiResponse = completion.choices[0]?.message?.content;
-      if (!aiResponse) {
-        return NextResponse.json(
-          { success: false, error: "AI analysis failed. Please try again." },
-          { status: 500 }
-        );
-      }
-
-      let insights: { title?: string; summary?: string; keyPoints?: string[]; tags?: string[] };
-      try {
-        insights = JSON.parse(aiResponse);
-      } catch {
-        return NextResponse.json(
-          { success: false, error: "Failed to parse AI response. Please try again." },
-          { status: 500 }
-        );
-      }
-
-      const result: ExtractedInsights = {
-        title: insights.title || "Untitled Video",
-        summary: insights.summary || "No summary available.",
-        keyPoints: insights.keyPoints || [],
-        tags: insights.tags || [],
-        sourceUrl: url,
-      };
-
-      return NextResponse.json({ success: true, data: result });
-    }
-
-    // ─── Article/Web Page Branch (existing flow) ────────────────
     // 3. Fetch URL content with timeout
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
@@ -293,8 +162,8 @@ Return ONLY valid JSON. No other text.`,
     }
 
     // Check for very low content-to-noise ratio (likely not a real article)
-    const articleWordCount = textContent.split(/\s+/).length;
-    if (articleWordCount < 50) {
+    const wordCount = textContent.split(/\s+/).length;
+    if (wordCount < 50) {
       return NextResponse.json(
         { success: false, error: "Not enough meaningful content found on this page. Try a different URL with more text content." },
         { status: 400 }
@@ -306,7 +175,7 @@ Return ONLY valid JSON. No other text.`,
       textContent = textContent.substring(0, 6000) + "...";
     }
 
-    // 6. Call OpenAI
+    // 5. Call OpenAI
     const openai = new OpenAI({ apiKey });
 
     const completion = await openai.chat.completions.create({
