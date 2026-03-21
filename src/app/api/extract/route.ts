@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { isYouTubeUrl, extractVideoId } from "@/lib/youtube";
-
-// Dynamic import for youtube-transcript to handle ESM/CJS compatibility
-async function getTranscript(videoId: string): Promise<{ text: string; duration: number; offset: number }[]> {
-  const { fetchTranscript } = await import("youtube-transcript");
-  return fetchTranscript(videoId);
-}
+import { isYouTubeUrl, extractVideoId, fetchYouTubeTranscript } from "@/lib/youtube";
 
 interface ExtractedInsights {
   title: string;
@@ -105,7 +99,7 @@ export async function POST(request: Request) {
       // Fetch transcript
       let transcriptText: string;
       try {
-        const segments = await getTranscript(videoId);
+        const segments = await fetchYouTubeTranscript(videoId);
 
         if (!segments || segments.length === 0) {
           return NextResponse.json(
