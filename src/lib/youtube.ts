@@ -51,7 +51,10 @@ export interface TranscriptSegment {
 const INNERTUBE_URL = "https://www.youtube.com/youtubei/v1/player?prettyPrint=false";
 const ANDROID_VERSION = "20.10.38";
 const ANDROID_USER_AGENT = `com.google.android.youtube/${ANDROID_VERSION} (Linux; U; Android 14)`;
-const WEB_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)";
+const WEB_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+// YouTube consent cookie to bypass consent pages on cloud servers (EU regions etc.)
+const YT_CONSENT_COOKIE = "CONSENT=PENDING+987; SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjMwODI5LjA3X3AxGgJlbiACGgYIgJnBlwY";
 
 /** Decode HTML entities in transcript text */
 function decodeEntities(text: string): string {
@@ -124,12 +127,19 @@ async function fetchViaInnerTube(videoId: string): Promise<TranscriptSegment[] |
       headers: {
         "Content-Type": "application/json",
         "User-Agent": ANDROID_USER_AGENT,
+        "X-YouTube-Client-Name": "3",
+        "X-YouTube-Client-Version": ANDROID_VERSION,
+        "Origin": "https://www.youtube.com",
+        "Referer": "https://www.youtube.com/",
       },
       body: JSON.stringify({
         context: {
           client: {
             clientName: "ANDROID",
             clientVersion: ANDROID_VERSION,
+            hl: "en",
+            gl: "US",
+            androidSdkVersion: 34,
           },
         },
         videoId,
@@ -152,7 +162,12 @@ async function fetchViaInnerTube(videoId: string): Promise<TranscriptSegment[] |
 /** Fetch transcript via web page scraping (fallback) */
 async function fetchViaWebPage(videoId: string): Promise<TranscriptSegment[]> {
   const pageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-    headers: { "User-Agent": WEB_USER_AGENT },
+    headers: {
+      "User-Agent": WEB_USER_AGENT,
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Cookie": YT_CONSENT_COOKIE,
+    },
   });
   const html = await pageResponse.text();
 
@@ -226,17 +241,148 @@ async function fetchFromCaptionTrack(trackUrl: string): Promise<TranscriptSegmen
   return parseTranscriptXml(xml);
 }
 
+/** Fetch transcript via InnerTube get_transcript endpoint (works better from cloud servers) */
+async function fetchViaInnerTubeTranscript(videoId: string): Promise<TranscriptSegment[] | null> {
+  try {
+    // First, get the video page to extract a valid API key
+    const pageResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: {
+        "User-Agent": WEB_USER_AGENT,
+        "Accept-Language": "en-US,en;q=0.9",
+        "Cookie": YT_CONSENT_COOKIE,
+      },
+    });
+    const html = await pageResponse.text();
+
+    // Extract the innertube API key from the page
+    const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/);
+    if (!apiKeyMatch) return null;
+    const apiKey = apiKeyMatch[1];
+
+    // Extract serialized share entity (for get_transcript)
+    // Try to find caption tracks from ytInitialPlayerResponse first
+    const marker = "var ytInitialPlayerResponse = ";
+    const startIdx = html.indexOf(marker);
+    if (startIdx === -1) return null;
+
+    const jsonStart = startIdx + marker.length;
+    let braceCount = 0;
+    let endIdx = jsonStart;
+    for (let i = jsonStart; i < html.length; i++) {
+      if (html[i] === "{") braceCount++;
+      else if (html[i] === "}") {
+        braceCount--;
+        if (braceCount === 0) { endIdx = i + 1; break; }
+      }
+    }
+
+    let playerResponse: { captions?: { playerCaptionsTracklistRenderer?: { captionTracks?: CaptionTrack[] } } };
+    try {
+      playerResponse = JSON.parse(html.slice(jsonStart, endIdx));
+    } catch {
+      return null;
+    }
+
+    const captionTracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+    if (!Array.isArray(captionTracks) || captionTracks.length === 0) {
+      // Try the InnerTube get_transcript API as last resort
+      const transcriptResponse = await fetch(
+        `https://www.youtube.com/youtubei/v1/get_transcript?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent": WEB_USER_AGENT,
+            "Cookie": YT_CONSENT_COOKIE,
+          },
+          body: JSON.stringify({
+            context: {
+              client: {
+                clientName: "WEB",
+                clientVersion: "2.20240313.00.00",
+                hl: "en",
+                gl: "US",
+              },
+            },
+            params: Buffer.from(`\n\x0b${videoId}`).toString("base64"),
+          }),
+        }
+      );
+
+      if (!transcriptResponse.ok) return null;
+
+      interface TranscriptCue {
+        transcriptCueGroupRenderer?: {
+          cues?: Array<{
+            transcriptCueRenderer?: {
+              cue?: { simpleText?: string };
+              startOffsetMs?: string;
+              durationMs?: string;
+            };
+          }>;
+        };
+      }
+
+      const transcriptData = await transcriptResponse.json() as {
+        actions?: Array<{
+          updateEngagementPanelAction?: {
+            content?: {
+              transcriptRenderer?: {
+                body?: {
+                  transcriptBodyRenderer?: {
+                    cueGroups?: TranscriptCue[];
+                  };
+                };
+              };
+            };
+          };
+        }>;
+      };
+
+      const cueGroups = transcriptData?.actions?.[0]?.updateEngagementPanelAction
+        ?.content?.transcriptRenderer?.body?.transcriptBodyRenderer?.cueGroups;
+
+      if (!Array.isArray(cueGroups) || cueGroups.length === 0) return null;
+
+      const segments: TranscriptSegment[] = [];
+      for (const group of cueGroups) {
+        const cue = group.transcriptCueGroupRenderer?.cues?.[0]?.transcriptCueRenderer;
+        if (cue?.cue?.simpleText) {
+          segments.push({
+            text: cue.cue.simpleText,
+            offset: parseInt(cue.startOffsetMs || "0", 10),
+            duration: parseInt(cue.durationMs || "0", 10),
+          });
+        }
+      }
+
+      return segments.length > 0 ? segments : null;
+    }
+
+    // We have caption tracks — fetch the transcript XML
+    return await fetchFromCaptionTrack(captionTracks[0].baseUrl);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Fetch transcript for a YouTube video.
- * Tries InnerTube API first, falls back to web page scraping.
+ * Tries multiple methods: InnerTube Android API → InnerTube Web transcript → Web page scraping.
  */
 export async function fetchYouTubeTranscript(videoId: string): Promise<TranscriptSegment[]> {
-  // Try InnerTube API first (faster, more reliable)
+  // Method 1: InnerTube Android API (fastest, works well locally)
   const innerTubeResult = await fetchViaInnerTube(videoId);
   if (innerTubeResult && innerTubeResult.length > 0) {
     return innerTubeResult;
   }
 
-  // Fallback to web page scraping
+  // Method 2: InnerTube Web with get_transcript API (better from cloud servers)
+  const webInnerTubeResult = await fetchViaInnerTubeTranscript(videoId);
+  if (webInnerTubeResult && webInnerTubeResult.length > 0) {
+    return webInnerTubeResult;
+  }
+
+  // Method 3: Direct web page scraping (last resort)
   return fetchViaWebPage(videoId);
 }
