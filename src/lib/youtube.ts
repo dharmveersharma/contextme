@@ -119,27 +119,31 @@ interface CaptionTrack {
   languageCode: string;
 }
 
-/** Fetch transcript via YouTube InnerTube API (Android client) */
-async function fetchViaInnerTube(videoId: string): Promise<TranscriptSegment[] | null> {
+/** Try a specific InnerTube client to get caption tracks */
+async function tryInnerTubeClient(
+  videoId: string,
+  clientName: string,
+  clientVersion: string,
+  userAgent: string,
+  extraClientFields?: Record<string, unknown>
+): Promise<TranscriptSegment[] | null> {
   try {
     const response = await fetch(INNERTUBE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "User-Agent": ANDROID_USER_AGENT,
-        "X-YouTube-Client-Name": "3",
-        "X-YouTube-Client-Version": ANDROID_VERSION,
+        "User-Agent": userAgent,
         "Origin": "https://www.youtube.com",
         "Referer": "https://www.youtube.com/",
       },
       body: JSON.stringify({
         context: {
           client: {
-            clientName: "ANDROID",
-            clientVersion: ANDROID_VERSION,
+            clientName,
+            clientVersion,
             hl: "en",
             gl: "US",
-            androidSdkVersion: 34,
+            ...extraClientFields,
           },
         },
         videoId,
@@ -157,6 +161,29 @@ async function fetchViaInnerTube(videoId: string): Promise<TranscriptSegment[] |
   } catch {
     return null;
   }
+}
+
+/** Fetch transcript via InnerTube API — tries multiple client types */
+async function fetchViaInnerTube(videoId: string): Promise<TranscriptSegment[] | null> {
+  // Try ANDROID client (most reliable locally)
+  const androidResult = await tryInnerTubeClient(
+    videoId, "ANDROID", ANDROID_VERSION, ANDROID_USER_AGENT, { androidSdkVersion: 34 }
+  );
+  if (androidResult && androidResult.length > 0) return androidResult;
+
+  // Try IOS client (sometimes works when Android doesn't)
+  const iosResult = await tryInnerTubeClient(
+    videoId, "IOS", "20.10.38", "com.google.ios.youtube/20.10.38 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"
+  );
+  if (iosResult && iosResult.length > 0) return iosResult;
+
+  // Try WEB client as last InnerTube attempt
+  const webResult = await tryInnerTubeClient(
+    videoId, "WEB", "2.20240313.00.00", WEB_USER_AGENT
+  );
+  if (webResult && webResult.length > 0) return webResult;
+
+  return null;
 }
 
 /** Fetch transcript via web page scraping (fallback) */

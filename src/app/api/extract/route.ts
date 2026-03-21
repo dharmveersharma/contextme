@@ -132,12 +132,12 @@ export async function POST(request: Request) {
         }
         if (errMsg.includes("no transcripts") || errMsg.includes("not available")) {
           return NextResponse.json(
-            { success: false, error: "No transcript/captions available for this video." },
+            { success: false, error: "No transcript/captions available for this video. Some videos restrict transcript access from servers." },
             { status: 400 }
           );
         }
         return NextResponse.json(
-          { success: false, error: "Could not fetch transcript for this video. It may not have captions available." },
+          { success: false, error: "Could not fetch transcript for this video. Some videos restrict transcript access — try a different video." },
           { status: 400 }
         );
       }
