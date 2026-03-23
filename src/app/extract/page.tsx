@@ -5,102 +5,55 @@ import Link from "next/link";
 import { ExtractedInsights } from "@/lib/types";
 import { saveToHistory } from "@/lib/history";
 import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
-
-// ─── Icons ──────────────────────────────────────────────────
-const icons = {
-  brain: (cls: string) => (
-    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-    </svg>
-  ),
-  sparkles: (cls: string) => (
-    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-    </svg>
-  ),
-  bolt: (cls: string) => (
-    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
-    </svg>
-  ),
-  link: (cls: string) => (
-    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-    </svg>
-  ),
-  tag: (cls: string) => (
-    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
-    </svg>
-  ),
-  spinner: (cls: string) => (
-    <svg className={cls} viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-    </svg>
-  ),
-};
-
-// ─── Navbar ─────────────────────────────────────────────────
-function Navbar() {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-      <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-1.5">
-          {icons.brain("w-5 h-5 text-violet-400")}
-          <span className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">ContextMe</span>
-        </Link>
-        <div className="flex items-center gap-4 text-xs text-gray-400">
-          <Link href="/extract" className="text-violet-400 font-medium">Extract</Link>
-          <Link href="/history" className="hover:text-white transition-colors">History</Link>
-        </div>
-      </div>
-    </nav>
-  );
-}
+import { icons } from "@/components/icons";
+import { Navbar } from "@/components/Navbar";
 
 // ─── Loading Skeleton ───────────────────────────────────────
 function LoadingSkeleton() {
   return (
-    <div className="max-w-2xl mx-auto mt-6 space-y-3">
-      {/* Title skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <div className="h-2 w-12 bg-violet-500/20 rounded mb-2 animate-pulse" />
-        <div className="h-5 w-3/4 bg-white/5 rounded animate-shimmer" />
+    <div className="max-w-2xl mx-auto mt-6 space-y-3 px-4">
+      {/* Title + Source skeleton */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up">
+        <div className="h-2.5 w-16 skeleton-block rounded mb-3" />
+        <div className="h-5 w-3/4 skeleton-block rounded mb-2" />
+        <div className="h-3 w-1/2 skeleton-block rounded" />
       </div>
       {/* Summary skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <div className="h-2 w-16 bg-violet-500/20 rounded mb-2 animate-pulse" />
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-1">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-5 h-5 rounded skeleton-block" />
+          <div className="h-2.5 w-20 skeleton-block rounded" />
+        </div>
         <div className="space-y-2">
-          <div className="h-3 w-full bg-white/5 rounded animate-shimmer" />
-          <div className="h-3 w-5/6 bg-white/5 rounded animate-shimmer" />
-          <div className="h-3 w-2/3 bg-white/5 rounded animate-shimmer" />
+          <div className="h-3.5 w-full skeleton-block rounded" />
+          <div className="h-3.5 w-5/6 skeleton-block rounded" />
+          <div className="h-3.5 w-2/3 skeleton-block rounded" />
         </div>
       </div>
-      {/* Key Points skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <div className="h-2 w-20 bg-violet-500/20 rounded mb-3 animate-pulse" />
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-violet-500/10 animate-pulse" />
-              <div className="h-3 flex-1 bg-white/5 rounded animate-shimmer" />
+      {/* Key Insights skeleton */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-2">
+        <div className="h-2.5 w-24 skeleton-block rounded mb-3" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-start gap-3 mb-2.5">
+            <div className="w-6 h-6 rounded-lg skeleton-block shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <div className="h-3 w-full skeleton-block rounded" />
+              <div className="h-3 w-4/5 skeleton-block rounded" />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
       {/* Tags skeleton */}
-      <div className="flex gap-2">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-6 w-16 rounded-full bg-violet-500/10 animate-pulse" />
+      <div className="flex flex-wrap gap-2 animate-fade-in-up stagger-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="h-7 w-20 rounded-full skeleton-block" />
         ))}
       </div>
     </div>
   );
 }
 
-// ─── Results Display ────────────────────────────────────────
+// ─── Results Display (Card Sections) ────────────────────────
 function InsightResults({ data }: { data: ExtractedInsights }) {
   const [copied, setCopied] = useState(false);
 
@@ -113,104 +66,112 @@ function InsightResults({ data }: { data: ExtractedInsights }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-6 space-y-3">
-      {/* Title + Copy Button */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1 font-medium">Title</p>
-            <h2 className="text-base font-bold text-white">{data.title}</h2>
-          </div>
+    <div className="max-w-2xl mx-auto mt-6 space-y-3 px-4">
+      {/* ── Card 1: Title + Source ── */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up">
+        <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-2 font-medium">Title</p>
+        <h2 className="text-lg font-bold leading-snug mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-violet-200">
+          {data.title}
+        </h2>
+        <div className="flex items-center gap-1.5">
+          {icons.externalLink("w-3 h-3 text-gray-500 shrink-0")}
+          <a
+            href={data.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate max-w-full"
+          >
+            {data.sourceUrl}
+          </a>
+        </div>
+      </div>
+
+      {/* ── Card 2: Summary ── */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-1">
+        <div className="flex items-center gap-2 mb-2">
+          {icons.document("w-4 h-4 text-violet-400")}
+          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Summary</p>
+        </div>
+        <p className="text-[13px] text-gray-300 leading-relaxed">{data.summary}</p>
+      </div>
+
+      {/* ── Card 3: Key Insights with numbered badges ── */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-2">
+        <div className="flex items-center gap-2 mb-3">
+          {icons.bolt("w-4 h-4 text-indigo-400")}
+          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Key Insights</p>
+        </div>
+        <div className="space-y-2.5">
+          {data.keyPoints.map((point, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border-l-2 border-violet-500/30 hover:bg-white/[0.04] transition-colors"
+            >
+              <span className="shrink-0 w-6 h-6 rounded-lg bg-violet-500/15 flex items-center justify-center text-[11px] font-bold text-violet-300">
+                {i + 1}
+              </span>
+              <span className="text-sm text-gray-300 leading-relaxed">{point}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Card 4: Tags ── */}
+      <div className="animate-fade-in-up stagger-3">
+        <div className="flex items-center gap-2 mb-2 px-1">
+          {icons.tag("w-3.5 h-3.5 text-violet-400")}
+          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Tags</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {data.tags.map((tag, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs hover:bg-violet-500/15 transition-colors"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Card 5: Export Actions ── */}
+      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4 animate-fade-in-up stagger-4">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleCopy}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-[11px] transition-all hover:bg-violet-500/5"
-            title="Copy all insights to clipboard"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
           >
             {copied ? (
               <>
-                <svg className="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
+                {icons.check("w-3.5 h-3.5 text-green-400")}
                 <span className="text-green-400">Copied!</span>
               </>
             ) : (
               <>
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
-                </svg>
-                <span>Copy</span>
+                {icons.clipboard("w-3.5 h-3.5")}
+                <span>Copy All</span>
               </>
             )}
+          </button>
+          <button
+            onClick={() => downloadAsMarkdown(data)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
+          >
+            {icons.document("w-3.5 h-3.5")}
+            <span>Markdown</span>
+          </button>
+          <button
+            onClick={() => printAsPdf(data)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
+          >
+            {icons.download("w-3.5 h-3.5")}
+            <span>PDF</span>
           </button>
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1 font-medium">Summary</p>
-        <p className="text-sm text-gray-300 leading-relaxed">{data.summary}</p>
-      </div>
-
-      {/* Key Insights */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-        <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-2 font-medium">Key Insights</p>
-        <ul className="space-y-2">
-          {data.keyPoints.map((point, i) => (
-            <li key={i} className="flex items-start gap-2">
-              {icons.bolt("w-4 h-4 text-indigo-400 shrink-0 mt-0.5")}
-              <span className="text-sm text-gray-300 leading-relaxed">{point}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2">
-        {data.tags.map((tag, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs"
-          >
-            {icons.tag("w-3 h-3")}
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Source */}
-      <div className="flex items-center gap-1.5 pt-2">
-        {icons.link("w-3 h-3 text-gray-500 shrink-0")}
-        <a
-          href={data.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate max-w-full"
-        >
-          Source: {data.sourceUrl}
-        </a>
-      </div>
-
-      {/* Download Buttons */}
-      <div className="flex items-center gap-2 pt-2 pb-12">
-        <button
-          onClick={() => downloadAsMarkdown(data)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-          </svg>
-          Download Markdown
-        </button>
-        <button
-          onClick={() => printAsPdf(data)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-          </svg>
-          Download PDF
-        </button>
-      </div>
+      {/* Bottom spacer */}
+      <div className="h-8" />
     </div>
   );
 }
@@ -228,7 +189,6 @@ export default function ExtractPage() {
     setError("");
     setResult(null);
 
-    // Client-side validation
     const trimmedUrl = url.trim();
     if (!trimmedUrl) {
       setError("Please enter a URL.");
@@ -252,7 +212,6 @@ export default function ExtractPage() {
 
       if (data.success) {
         setResult(data.data);
-        // Auto-save to history
         saveToHistory(data.data);
         setSavedToast(true);
         setTimeout(() => setSavedToast(false), 3000);
@@ -272,29 +231,28 @@ export default function ExtractPage() {
 
       {/* Header + Input Section */}
       <section className="pt-20 pb-4 relative">
-        {/* Background glow */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[400px] h-[250px] bg-violet-600/15 rounded-full blur-[100px]" />
         </div>
 
         <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs mb-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs mb-4 animate-fade-in-up">
             {icons.sparkles("w-3 h-3")}
             <span>AI-Powered Extraction</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 animate-fade-in-up stagger-1">
             Extract Insights from{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">
               Any URL
             </span>
           </h1>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="text-sm text-gray-400 mb-6 animate-fade-in-up stagger-2">
             Paste an article, blog post, or web page — AI will extract the key takeaways instantly.
           </p>
 
           {/* URL Input Form */}
-          <form onSubmit={handleExtract} className="flex gap-2">
+          <form onSubmit={handleExtract} className="flex gap-2 animate-fade-in-up stagger-3">
             <div className="flex-1 relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 {icons.link("w-4 h-4 text-gray-500")}
@@ -329,10 +287,8 @@ export default function ExtractPage() {
 
           {/* Error message */}
           {error && (
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-red-400 text-xs">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-              </svg>
+            <div className="mt-3 flex items-center justify-center gap-1.5 text-red-400 text-xs animate-fade-in-up">
+              {icons.warning("w-3.5 h-3.5")}
               {error}
             </div>
           )}
@@ -342,9 +298,7 @@ export default function ExtractPage() {
       {/* Saved Toast */}
       {savedToast && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-xs font-medium animate-fade-in">
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-          </svg>
+          {icons.check("w-3.5 h-3.5")}
           Saved to history
           <Link href="/history" className="underline hover:text-green-300 transition-colors">View</Link>
         </div>
@@ -354,9 +308,9 @@ export default function ExtractPage() {
       {loading && <LoadingSkeleton />}
       {result && <InsightResults data={result} />}
 
-      {/* Empty state when no results yet */}
+      {/* Empty state */}
       {!loading && !result && !error && (
-        <div className="max-w-2xl mx-auto px-4 mt-8 text-center">
+        <div className="max-w-2xl mx-auto px-4 mt-8 text-center animate-fade-in-up">
           <div className="rounded-xl border border-dashed border-white/10 p-8">
             {icons.brain("w-10 h-10 text-gray-700 mx-auto mb-3")}
             <p className="text-sm text-gray-600 mb-1">Your insights will appear here</p>
