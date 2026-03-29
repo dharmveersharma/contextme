@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -15,6 +15,8 @@ export function Navbar({ variant = "app" }: NavbarProps) {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -25,7 +27,25 @@ export function Navbar({ variant = "app" }: NavbarProps) {
 
   useEffect(() => {
     setMobileOpen(false);
+    setUserMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!userMenuRef.current) return;
+      if (!userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handlePointerDown);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [userMenuOpen]);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -38,6 +58,9 @@ export function Navbar({ variant = "app" }: NavbarProps) {
     pathname === href
       ? "text-[#4f46e5] font-semibold"
       : "text-[#6b645f] hover:text-[#1c1917] transition-colors";
+
+  const userDisplayName = userEmail ? userEmail.split("@")[0] : "";
+  const userInitial = userDisplayName ? userDisplayName.charAt(0).toUpperCase() : "U";
 
   const logo = (
     <div className="flex items-center gap-2">
@@ -74,23 +97,41 @@ export function Navbar({ variant = "app" }: NavbarProps) {
 
             <div className="hidden items-center gap-2 md:flex">
               {userEmail ? (
-                <>
-                  <span className="max-w-[160px] truncate text-xs text-[#8a817b]">
-                    {userEmail}
-                  </span>
+                <div ref={userMenuRef} className="relative">
                   <button
-                    onClick={handleLogout}
-                    className="px-3 py-2 text-sm text-[#6b645f] hover:text-[#1c1917] transition-colors"
+                    type="button"
+                    onClick={() => setUserMenuOpen((open) => !open)}
+                    className="inline-flex items-center justify-center rounded-full border border-[rgba(28,25,23,0.08)] bg-white/80 p-2 text-sm text-[#6b645f] shadow-sm transition-all hover:border-[rgba(79,70,229,0.16)] hover:text-[#1c1917]"
+                    aria-label="Open account menu"
+                    aria-expanded={userMenuOpen}
                   >
-                    Logout
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                      {userInitial}
+                    </span>
                   </button>
-                  <Link
-                    href="/extract"
-                    className="rounded-full bg-[#4f46e5] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
-                  >
-                    Dashboard
-                  </Link>
-                </>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 top-[calc(100%+10px)] w-44 rounded-2xl border border-[rgba(28,25,23,0.08)] bg-white p-2 shadow-[0_20px_40px_rgba(28,25,23,0.12)]">
+                      <Link
+                        href="/extract"
+                        className="block rounded-xl px-3 py-2 text-sm text-[#6b645f] transition-colors hover:bg-[#eef0ff] hover:text-[#1c1917]"
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="block rounded-xl px-3 py-2 text-sm text-[#6b645f] transition-colors hover:bg-[#eef0ff] hover:text-[#1c1917]"
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full rounded-xl px-3 py-2 text-left text-sm text-[#6b645f] transition-colors hover:bg-[#fff3e0] hover:text-[#1c1917]"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
                   <Link
@@ -128,12 +169,23 @@ export function Navbar({ variant = "app" }: NavbarProps) {
               <Link href="/history" className="block text-sm text-[#6b645f]">History</Link>
               {userEmail ? (
                 <div className="space-y-3 pt-2">
-                  <p className="text-xs text-[#8a817b]">{userEmail}</p>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-3 py-2 text-sm text-[#6b645f]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                      {userInitial}
+                    </span>
+                    <span>Account</span>
+                  </div>
                   <Link
                     href="/extract"
                     className="block rounded-full bg-[#4f46e5] px-4 py-3 text-center text-sm font-medium text-white"
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-4 py-3 text-center text-sm text-[#6b645f]"
+                  >
+                    Settings
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -176,17 +228,41 @@ export function Navbar({ variant = "app" }: NavbarProps) {
           <Link href="/extract" className={linkClass("/extract")}>Extract</Link>
           <Link href="/history" className={linkClass("/history")}>History</Link>
           {userEmail && (
-            <>
-              <span className="max-w-[160px] truncate text-xs text-[#8a817b]">
-                {userEmail}
-              </span>
+            <div ref={userMenuRef} className="relative">
               <button
-                onClick={handleLogout}
-                className="text-sm text-[#6b645f] hover:text-[#1c1917] transition-colors"
+                type="button"
+                onClick={() => setUserMenuOpen((open) => !open)}
+                className="inline-flex items-center justify-center rounded-full border border-[rgba(28,25,23,0.08)] bg-white/80 p-2 text-sm text-[#6b645f] shadow-sm transition-all hover:border-[rgba(79,70,229,0.16)] hover:text-[#1c1917]"
+                aria-label="Open account menu"
+                aria-expanded={userMenuOpen}
               >
-                Logout
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                  {userInitial}
+                </span>
               </button>
-            </>
+              {userMenuOpen && (
+                <div className="absolute right-0 top-[calc(100%+10px)] w-44 rounded-2xl border border-[rgba(28,25,23,0.08)] bg-white p-2 shadow-[0_20px_40px_rgba(28,25,23,0.12)]">
+                  <Link
+                    href="/extract"
+                    className="block rounded-xl px-3 py-2 text-sm text-[#6b645f] transition-colors hover:bg-[#eef0ff] hover:text-[#1c1917]"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block rounded-xl px-3 py-2 text-sm text-[#6b645f] transition-colors hover:bg-[#eef0ff] hover:text-[#1c1917]"
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full rounded-xl px-3 py-2 text-left text-sm text-[#6b645f] transition-colors hover:bg-[#fff3e0] hover:text-[#1c1917]"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -207,7 +283,18 @@ export function Navbar({ variant = "app" }: NavbarProps) {
             <Link href="/history" className="block text-[#6b645f]">History</Link>
             {userEmail && (
               <>
-                <p className="pt-2 text-xs text-[#8a817b]">{userEmail}</p>
+                <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-3 py-2 text-sm text-[#6b645f]">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                    {userInitial}
+                  </span>
+                  <span>Account</span>
+                </div>
+                <Link
+                  href="/settings"
+                  className="block rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-4 py-3 text-center text-sm text-[#6b645f]"
+                >
+                  Settings
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="block w-full rounded-full border border-[rgba(28,25,23,0.08)] px-4 py-3 text-sm text-[#6b645f]"
