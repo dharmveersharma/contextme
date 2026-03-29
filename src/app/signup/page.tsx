@@ -60,26 +60,19 @@ export default function SignupPage() {
     <main className="min-h-screen">
       <Navbar variant="landing" />
 
-      <section className="pt-24 pb-12 relative">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[400px] h-[250px] bg-violet-600/15 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="relative z-10 max-w-sm mx-auto px-4">
-          <div className="text-center mb-8 animate-fade-in-up">
-            {icons.brain("w-10 h-10 text-violet-400 mx-auto mb-3")}
-            <h1 className="text-2xl font-bold mb-1">Create Account</h1>
-            <p className="text-sm text-gray-400">
-              Start building your AI-powered knowledge base
+      <section className="px-4 pt-32 pb-12">
+        <div className="mx-auto max-w-md">
+          <div className="text-center animate-fade-in-up">
+            {icons.sparkles("w-10 h-10 text-[#4f46e5] mx-auto")}
+            <h1 className="mt-4 text-3xl font-semibold text-[#2f241d]">Create your space</h1>
+            <p className="mt-3 text-sm leading-7 text-[#6f5e52]">
+              Start a calmer, more useful home for what you read and think about.
             </p>
           </div>
 
-          <form
-            onSubmit={handleSignup}
-            className="space-y-4 animate-fade-in-up stagger-1"
-          >
+          <form onSubmit={handleSignup} className="glass-card mt-8 space-y-4 p-6 animate-fade-in-up stagger-1">
             <div>
-              <label className="block text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-medium">
+              <label className="mb-2 block text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">
                 Email
               </label>
               <input
@@ -88,12 +81,12 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 disabled={loading}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full rounded-[20px] border border-[rgba(28,25,23,0.08)] bg-white px-4 py-3 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-medium">
+              <label className="mb-2 block text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">
                 Password
               </label>
               <input
@@ -102,12 +95,12 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
                 disabled={loading}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full rounded-[20px] border border-[rgba(28,25,23,0.08)] bg-white px-4 py-3 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-medium">
+              <label className="mb-2 block text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">
                 Confirm Password
               </label>
               <input
@@ -116,13 +109,13 @@ export default function SignupPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
                 disabled={loading}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full rounded-[20px] border border-[rgba(28,25,23,0.08)] bg-white px-4 py-3 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
               />
             </div>
 
             {error && (
-              <div className="flex items-center gap-1.5 text-red-400 text-xs">
-                {icons.warning("w-3.5 h-3.5")}
+              <div className="flex items-center gap-2 text-sm text-red-500">
+                {icons.warning("w-4 h-4")}
                 {error}
               </div>
             )}
@@ -130,7 +123,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-medium transition-all"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#4f46e5] py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -143,12 +136,9 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-500 mt-6 animate-fade-in-up stagger-2">
+          <p className="mt-6 text-center text-sm text-[#8a786a] animate-fade-in-up stagger-2">
             Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-violet-400 hover:text-violet-300 transition-colors"
-            >
+            <Link href="/login" className="text-[#4f46e5] transition-colors hover:text-[#4338ca]">
               Sign in
             </Link>
           </p>

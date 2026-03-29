@@ -72,6 +72,11 @@ export const icons = {
   play: (cls: string) => (
     <svg className={cls} fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
   ),
+  menu: (cls: string) => (
+    <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+  ),
   // New icons for redesigned UI
   document: (cls: string) => (
     <svg className={cls} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

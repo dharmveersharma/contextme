@@ -8,52 +8,24 @@ import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
 import { icons } from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
 
-// ─── Loading Skeleton ───────────────────────────────────────
 function LoadingSkeleton() {
   return (
-    <div className="max-w-2xl mx-auto mt-6 space-y-3 px-4">
-      {/* Title + Source skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up">
-        <div className="h-2.5 w-16 skeleton-block rounded mb-3" />
-        <div className="h-5 w-3/4 skeleton-block rounded mb-2" />
-        <div className="h-3 w-1/2 skeleton-block rounded" />
-      </div>
-      {/* Summary skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-1">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-5 h-5 rounded skeleton-block" />
-          <div className="h-2.5 w-20 skeleton-block rounded" />
-        </div>
-        <div className="space-y-2">
-          <div className="h-3.5 w-full skeleton-block rounded" />
-          <div className="h-3.5 w-5/6 skeleton-block rounded" />
-          <div className="h-3.5 w-2/3 skeleton-block rounded" />
-        </div>
-      </div>
-      {/* Key Insights skeleton */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-2">
-        <div className="h-2.5 w-24 skeleton-block rounded mb-3" />
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-start gap-3 mb-2.5">
-            <div className="w-6 h-6 rounded-lg skeleton-block shrink-0" />
-            <div className="flex-1 space-y-1.5">
-              <div className="h-3 w-full skeleton-block rounded" />
-              <div className="h-3 w-4/5 skeleton-block rounded" />
-            </div>
+    <div className="mx-auto mt-8 max-w-3xl space-y-4 px-4">
+      {[1, 2, 3].map((card) => (
+        <div key={card} className="glass-card p-5 animate-fade-in-up">
+          <div className="h-3 w-24 skeleton-block rounded mb-4" />
+          <div className="h-5 w-2/3 skeleton-block rounded mb-3" />
+          <div className="space-y-2">
+            <div className="h-3.5 w-full skeleton-block rounded" />
+            <div className="h-3.5 w-5/6 skeleton-block rounded" />
+            <div className="h-3.5 w-2/3 skeleton-block rounded" />
           </div>
-        ))}
-      </div>
-      {/* Tags skeleton */}
-      <div className="flex flex-wrap gap-2 animate-fade-in-up stagger-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-7 w-20 rounded-full skeleton-block" />
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-// ─── Results Display (Card Sections) ────────────────────────
 function InsightResults({ data }: { data: ExtractedInsights }) {
   const [copied, setCopied] = useState(false);
 
@@ -66,67 +38,61 @@ function InsightResults({ data }: { data: ExtractedInsights }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-6 space-y-3 px-4">
-      {/* ── Card 1: Title + Source ── */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up">
-        <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-2 font-medium">Title</p>
-        <h2 className="text-lg font-bold leading-snug mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-violet-200">
-          {data.title}
-        </h2>
-        <div className="flex items-center gap-1.5">
-          {icons.externalLink("w-3 h-3 text-gray-500 shrink-0")}
+    <div className="mx-auto mt-8 max-w-3xl space-y-4 px-4 pb-12">
+      <div className="glass-card p-6 animate-fade-in-up">
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Saved page</p>
+        <h2 className="mt-2 text-2xl font-semibold leading-tight text-[#2f241d]">{data.title}</h2>
+        <div className="mt-3 flex items-center gap-2">
+          {icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
           <a
             href={data.sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate max-w-full"
+            className="truncate text-sm text-[#8a817b] transition-colors hover:text-[#4f46e5]"
           >
             {data.sourceUrl}
           </a>
         </div>
       </div>
 
-      {/* ── Card 2: Summary ── */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-1">
-        <div className="flex items-center gap-2 mb-2">
-          {icons.document("w-4 h-4 text-violet-400")}
-          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Summary</p>
+      <div className="glass-card p-6 animate-fade-in-up stagger-1">
+        <div className="mb-3 flex items-center gap-2">
+          {icons.document("w-4 h-4 text-[#4f46e5]")}
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Summary</p>
         </div>
-        <p className="text-[13px] text-gray-300 leading-relaxed">{data.summary}</p>
+        <p className="text-sm leading-7 text-[#5d4e43]">{data.summary}</p>
       </div>
 
-      {/* ── Card 3: Key Insights with numbered badges ── */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-5 animate-fade-in-up stagger-2">
-        <div className="flex items-center gap-2 mb-3">
-          {icons.bolt("w-4 h-4 text-indigo-400")}
-          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Key Insights</p>
+      <div className="glass-card p-6 animate-fade-in-up stagger-2">
+        <div className="mb-4 flex items-center gap-2">
+          {icons.bolt("w-4 h-4 text-[#d97706]")}
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Key takeaways</p>
         </div>
-        <div className="space-y-2.5">
-          {data.keyPoints.map((point, i) => (
+        <div className="space-y-3">
+          {data.keyPoints.map((point, index) => (
             <div
-              key={i}
-              className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border-l-2 border-violet-500/30 hover:bg-white/[0.04] transition-colors"
+              key={index}
+              className="flex items-start gap-3 rounded-[22px] border border-[rgba(28,25,23,0.08)] bg-[#fffdf9] p-4"
             >
-              <span className="shrink-0 w-6 h-6 rounded-lg bg-violet-500/15 flex items-center justify-center text-[11px] font-bold text-violet-300">
-                {i + 1}
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                {index + 1}
               </span>
-              <span className="text-sm text-gray-300 leading-relaxed">{point}</span>
+              <span className="text-sm leading-7 text-[#5d4e43]">{point}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Card 4: Tags ── */}
       <div className="animate-fade-in-up stagger-3">
-        <div className="flex items-center gap-2 mb-2 px-1">
-          {icons.tag("w-3.5 h-3.5 text-violet-400")}
-          <p className="text-[10px] text-violet-400 uppercase tracking-wider font-medium">Tags</p>
+        <div className="mb-2 flex items-center gap-2 px-1">
+          {icons.tag("w-4 h-4 text-[#d97706]")}
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Tags</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {data.tags.map((tag, i) => (
+          {data.tags.map((tag, index) => (
             <span
-              key={i}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs hover:bg-violet-500/15 transition-colors"
+              key={index}
+              className={`rounded-full px-3 py-1.5 text-xs ${index % 2 === 0 ? "bg-[#eef0ff] text-[#4f46e5]" : "bg-[#fff3e0] text-[#d97706]"}`}
             >
               {tag}
             </span>
@@ -134,49 +100,35 @@ function InsightResults({ data }: { data: ExtractedInsights }) {
         </div>
       </div>
 
-      {/* ── Card 5: Export Actions ── */}
-      <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4 animate-fade-in-up stagger-4">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="glass-card p-4 animate-fade-in-up stagger-4">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
+            className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
           >
-            {copied ? (
-              <>
-                {icons.check("w-3.5 h-3.5 text-green-400")}
-                <span className="text-green-400">Copied!</span>
-              </>
-            ) : (
-              <>
-                {icons.clipboard("w-3.5 h-3.5")}
-                <span>Copy All</span>
-              </>
-            )}
+            {copied ? icons.check("w-3.5 h-3.5 text-[#d97706]") : icons.clipboard("w-3.5 h-3.5")}
+            <span>{copied ? "Copied" : "Copy All"}</span>
           </button>
           <button
             onClick={() => downloadAsMarkdown(data)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
+            className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
           >
             {icons.document("w-3.5 h-3.5")}
             <span>Markdown</span>
           </button>
           <button
             onClick={() => printAsPdf(data)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-400 hover:text-violet-300 text-xs transition-all hover:bg-violet-500/5"
+            className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
           >
             {icons.download("w-3.5 h-3.5")}
             <span>PDF</span>
           </button>
         </div>
       </div>
-
-      {/* Bottom spacer */}
-      <div className="h-8" />
     </div>
   );
 }
 
-// ─── Main Extract Page ──────────────────────────────────────
 export default function ExtractPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -217,7 +169,7 @@ export default function ExtractPage() {
           setSavedToast(true);
           setTimeout(() => setSavedToast(false), 3000);
         } catch {
-          // Save failed silently — user can still see results
+          // Keep the extracted result visible even if history save fails.
         }
       } else {
         setError(data.error || "Something went wrong. Please try again.");
@@ -233,47 +185,39 @@ export default function ExtractPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      {/* Header + Input Section */}
-      <section className="pt-20 pb-4 relative">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[400px] h-[250px] bg-violet-600/15 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs mb-4 animate-fade-in-up">
-            {icons.sparkles("w-3 h-3")}
-            <span>AI-Powered Extraction</span>
+      <section className="relative px-4 pt-32 pb-6">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(79,70,229,0.12)] bg-[#eef0ff] px-4 py-2 text-xs text-[#4f46e5] animate-fade-in-up">
+            {icons.sparkles("w-3.5 h-3.5")}
+            AI-assisted capture
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2 animate-fade-in-up stagger-1">
-            Extract Insights from{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">
-              Any URL
-            </span>
+          <h1 className="mt-6 text-3xl font-semibold text-[#2f241d] sm:text-4xl animate-fade-in-up stagger-1">
+            Turn any page into something worth{" "}
+            <span className="gradient-text-warm">remembering</span>.
           </h1>
-          <p className="text-sm text-gray-400 mb-6 animate-fade-in-up stagger-2">
-            Paste an article, blog post, or web page — AI will extract the key takeaways instantly.
+          <p className="mt-4 text-base leading-8 text-[#6f5e52] animate-fade-in-up stagger-2">
+            Paste a URL and ContextMe will pull out the important ideas, tags, and takeaways in a format that feels easy to revisit later.
           </p>
 
-          {/* URL Input Form */}
-          <form onSubmit={handleExtract} className="flex gap-2 animate-fade-in-up stagger-3">
-            <div className="flex-1 relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                {icons.link("w-4 h-4 text-gray-500")}
+          <form onSubmit={handleExtract} className="mt-8 flex flex-col gap-3 sm:flex-row animate-fade-in-up stagger-3">
+            <div className="relative flex-1">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                {icons.link("w-4 h-4 text-[#a8a29e]")}
               </div>
               <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste a URL to extract insights..."
+                placeholder="Paste a URL to save and summarize..."
                 disabled={loading}
-                className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all disabled:opacity-50"
+                className="w-full rounded-[24px] border border-[rgba(28,25,23,0.08)] bg-white py-3 pl-11 pr-4 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all"
+              className="inline-flex items-center justify-center gap-2 rounded-[24px] bg-[#4f46e5] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -289,36 +233,34 @@ export default function ExtractPage() {
             </button>
           </form>
 
-          {/* Error message */}
           {error && (
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-red-400 text-xs animate-fade-in-up">
-              {icons.warning("w-3.5 h-3.5")}
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-red-500 animate-fade-in-up">
+              {icons.warning("w-4 h-4")}
               {error}
             </div>
           )}
         </div>
       </section>
 
-      {/* Saved Toast */}
       {savedToast && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/15 border border-green-500/30 text-green-400 text-xs font-medium animate-fade-in">
+        <div className="fixed top-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-[rgba(79,70,229,0.12)] bg-[#eef0ff] px-4 py-2 text-xs font-medium text-[#4f46e5] animate-fade-in">
           {icons.check("w-3.5 h-3.5")}
           Saved to history
-          <Link href="/history" className="underline hover:text-green-300 transition-colors">View</Link>
+          <Link href="/history" className="underline transition-colors hover:text-[#4338ca]">View</Link>
         </div>
       )}
 
-      {/* Results or Loading */}
       {loading && <LoadingSkeleton />}
       {result && <InsightResults data={result} />}
 
-      {/* Empty state */}
       {!loading && !result && !error && (
-        <div className="max-w-2xl mx-auto px-4 mt-8 text-center animate-fade-in-up">
-          <div className="rounded-xl border border-dashed border-white/10 p-8">
-            {icons.brain("w-10 h-10 text-gray-700 mx-auto mb-3")}
-            <p className="text-sm text-gray-600 mb-1">Your insights will appear here</p>
-            <p className="text-xs text-gray-700">Try pasting a blog post, news article, or any web page URL above</p>
+        <div className="mx-auto mt-10 max-w-3xl px-4 pb-12 text-center animate-fade-in-up">
+          <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
+            {icons.brain("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
+            <p className="text-base text-[#5d4e43]">Your extracted notes will appear here.</p>
+            <p className="mt-2 text-sm text-[#8a786a]">
+              Try a blog post, article, or reference page you want to keep in your second brain.
+            </p>
           </div>
         </div>
       )}

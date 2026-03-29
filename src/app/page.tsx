@@ -1,126 +1,190 @@
 import Link from "next/link";
 import { icons } from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
-// ─── Hero Section ───────────────────────────────────────────
+function CoffeeScene() {
+  return (
+    <div className="relative h-full min-h-[420px] overflow-hidden rounded-[24px] border border-[rgba(28,25,23,0.08)] bg-[linear-gradient(180deg,#fffaf2_0%,#f8efe0_100%)] p-5">
+      <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.9),transparent_70%)]" />
+      <div className="absolute right-10 top-10 text-[#a8a29e] opacity-80">
+        <svg width="84" height="36" viewBox="0 0 84 36" fill="none" aria-hidden="true">
+          <path d="M4 18C8 13 12 13 16 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M14 12C18 7 22 7 26 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M42 11C46 6 50 6 54 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M54 18C58 13 62 13 66 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="absolute left-8 top-14 h-32 w-32 rounded-full bg-white/70 blur-2xl" />
+      <div className="absolute left-1/2 top-[28%] h-36 w-36 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.8),rgba(255,255,255,0))]" />
+
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(180deg,transparent_0%,rgba(232,220,201,0.65)_100%)]" />
+      <div className="absolute bottom-16 left-0 right-0 h-px bg-[rgba(120,113,108,0.12)]" />
+
+      <div className="absolute bottom-14 right-12 flex flex-col gap-3">
+        <span className="h-2 w-20 rounded-full bg-[rgba(120,113,108,0.1)]" />
+        <span className="h-2 w-16 rounded-full bg-[rgba(120,113,108,0.08)]" />
+        <span className="h-2 w-10 rounded-full bg-[rgba(120,113,108,0.06)]" />
+      </div>
+
+      <div className="absolute bottom-10 left-1/2 w-[260px] -translate-x-1/2">
+        <div className="relative mx-auto h-48 w-48">
+          <div className="absolute left-1/2 top-1 h-20 w-16 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.55)_0%,rgba(255,255,255,0)_70%)] blur-md" />
+          <div className="absolute left-[74px] top-2 h-12 w-3 rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0))] opacity-80 blur-[1px]" />
+          <div className="absolute left-[88px] top-0 h-14 w-3 rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0))] opacity-70 blur-[1px]" />
+          <div className="absolute left-[102px] top-4 h-10 w-3 rounded-full bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0))] opacity-60 blur-[1px]" />
+
+          <div className="absolute left-1/2 top-8 h-20 w-28 -translate-x-1/2 rounded-[999px] bg-[#f2ddd1] shadow-[inset_0_3px_10px_rgba(255,255,255,0.5)]" />
+          <div className="absolute left-1/2 top-11 h-14 w-22 -translate-x-1/2 rounded-[999px] bg-[#6f4e37]" />
+          <div className="absolute left-1/2 top-[62px] h-8 w-16 -translate-x-1/2 rounded-[999px] bg-[radial-gradient(circle,#9b6b4e_0%,#6f4e37_75%)] opacity-90" />
+
+          <div className="absolute bottom-8 left-1/2 h-24 w-32 -translate-x-1/2 rounded-b-[40px] rounded-t-[26px] border border-[rgba(28,25,23,0.08)] bg-[linear-gradient(180deg,#ffffff_0%,#f5efe9_100%)] shadow-[0_16px_30px_rgba(28,25,23,0.08)]" />
+          <div className="absolute bottom-14 left-1/2 h-5 w-28 -translate-x-1/2 rounded-full bg-[#fffaf5]" />
+          <div className="absolute bottom-[60px] left-[144px] h-14 w-10 rounded-r-[24px] border-[6px] border-l-0 border-[#e9ddd0] bg-transparent" />
+          <div className="absolute bottom-3 left-1/2 h-4 w-44 -translate-x-1/2 rounded-full bg-[rgba(120,113,108,0.12)] blur-sm" />
+        </div>
+      </div>
+
+      <div className="absolute left-8 bottom-8 max-w-[170px] rounded-[20px] border border-white/60 bg-white/65 px-4 py-3 shadow-[0_12px_30px_rgba(28,25,23,0.05)]">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#a8a29e]">Morning Pages</p>
+        <p className="mt-2 text-sm leading-6 text-[#57534e]">
+          Capture thoughts the way a coffee break makes them arrive: slowly, clearly, and all at once.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function HeroSection() {
   return (
-    <section className="relative pt-20 pb-6 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-violet-600/15 rounded-full blur-[100px]" />
-      </div>
-      <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-300 text-xs mb-4">
-          {icons.sparkles("w-3 h-3")}
-          <span>AI-Powered Knowledge Base</span>
-        </div>
+    <section className="relative px-4 pt-28 pb-12 sm:pt-32 sm:pb-18">
+      <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+        <ScrollReveal>
+          <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(79,70,229,0.12)] bg-[#eef0ff] px-4 py-2 text-xs text-[#4f46e5]">
+            {icons.sparkles("h-3.5 w-3.5")}
+            A calmer home for ideas, links, and notes
+          </div>
 
-        <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-2">
-          Your <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">Second Brain</span> That Actually Thinks
-        </h1>
+          <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[#1c1917] sm:text-5xl lg:text-6xl">
+            Your second brain, designed like a clean{" "}
+            <span className="gradient-text-warm">morning notebook</span>.
+          </h1>
 
-        <p className="text-sm text-gray-400 max-w-xl mx-auto mb-5 leading-relaxed">
-          Paste any link. AI extracts key insights, finds connections to your saved knowledge, and builds a searchable brain that gets smarter every day.
-        </p>
+          <p className="mt-5 max-w-2xl text-base leading-8 text-[#6b645f] sm:text-lg">
+            Save an article, a passing thought, or something you want to return to later. ContextMe turns it into clear, searchable memory with structure that feels light instead of overwhelming.
+          </p>
 
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Link href="/extract" className="group flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
-            Start Building Your Brain
-            {icons.arrow("w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform")}
-          </Link>
-          <button className="flex items-center gap-1.5 text-gray-300 hover:text-white px-5 py-2 rounded-full text-sm border border-white/10 hover:border-white/20 transition-all">
-            Watch Demo
-            {icons.play("w-3.5 h-3.5")}
-          </button>
-        </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/extract"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
+            >
+              Start Writing
+              {icons.arrow("h-4 w-4")}
+            </Link>
+            <a
+              href="#learn-more"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(28,25,23,0.08)] bg-white/80 px-6 py-3 text-sm font-medium text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:text-[#1c1917]"
+            >
+              Learn More
+            </a>
+          </div>
 
-        {/* Mockup */}
-        <div className="max-w-lg mx-auto rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-indigo-500/5 p-3">
-          <div className="bg-[#12121a] rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-red-500/60" />
-                <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
-                <div className="w-2 h-2 rounded-full bg-green-500/60" />
-              </div>
-              <div className="flex-1 bg-white/5 rounded px-2 py-0.5 text-[10px] text-gray-500">contextme.app</div>
-            </div>
-            <div className="bg-white/5 rounded px-3 py-2 border border-white/5 mb-2 flex items-center gap-2">
-              {icons.link("w-3.5 h-3.5 text-violet-400 shrink-0")}
-              <span className="text-gray-400 text-[11px]">Paste any URL, article, video, or text...</span>
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              <div className="bg-violet-500/10 border border-violet-500/20 rounded p-1.5 animate-float" style={{ animationDelay: "0s" }}>
-                {icons.sparkles("w-3 h-3 text-violet-400")}
-                <p className="text-[9px] text-gray-300 mt-0.5">3 insights extracted</p>
-              </div>
-              <div className="bg-indigo-500/10 border border-indigo-500/20 rounded p-1.5 animate-float" style={{ animationDelay: "0.5s" }}>
-                {icons.link("w-3 h-3 text-indigo-400")}
-                <p className="text-[9px] text-gray-300 mt-0.5">5 connections found</p>
-              </div>
-              <div className="bg-purple-500/10 border border-purple-500/20 rounded p-1.5 animate-float" style={{ animationDelay: "1s" }}>
-                {icons.tag("w-3 h-3 text-purple-400")}
-                <p className="text-[9px] text-gray-300 mt-0.5">Auto-tagged: AI</p>
-              </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              ["One place", "for links, notes, and saved context"],
+              ["Quick recall", "without digging through old tabs"],
+              ["Daily use", "that feels steady and uncluttered"],
+            ].map(([title, text], index) => (
+              <ScrollReveal key={title} delayMs={index * 90}>
+                <div className="glass-card p-5">
+                  <p className="text-lg font-semibold text-[#1c1917]">{title}</p>
+                  <p className="mt-2 text-sm leading-6 text-[#6b645f]">{text}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delayMs={120}>
+          <div className="relative">
+            <div className="glass-card overflow-hidden p-5">
+              <CoffeeScene />
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
 
-// ─── Stats ──────────────────────────────────────────────────
-function StatsSection() {
-  return (
-    <section className="py-4 border-y border-white/5">
-      <div className="max-w-4xl mx-auto px-4 grid grid-cols-4 gap-4 text-center">
-        {[
-          ["10x", "Faster Recall"],
-          ["500+", "Beta Users"],
-          ["50K+", "Insights"],
-          ["99%", "Accuracy"],
-        ].map(([val, label], i) => (
-          <div key={i}>
-            <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">{val}</div>
-            <p className="text-gray-500 text-[10px]">{label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-// ─── Features ───────────────────────────────────────────────
 function FeaturesSection() {
   const features = [
-    { icon: icons.link, title: "Paste Any URL", desc: "Articles, videos, tweets, PDFs — AI extracts insights instantly.", iconCls: "w-4 h-4 text-violet-400", bgCls: "bg-violet-500/10" },
-    { icon: icons.brain, title: "Auto-Connect Ideas", desc: "AI finds connections between new saves and existing knowledge.", iconCls: "w-4 h-4 text-indigo-400", bgCls: "bg-indigo-500/10" },
-    { icon: icons.search, title: "Smart Search", desc: "Ask questions in natural language. Chat with your notes.", iconCls: "w-4 h-4 text-purple-400", bgCls: "bg-purple-500/10" },
-    { icon: icons.bolt, title: "Daily Digest", desc: "Daily summary of new connections. Discover hidden patterns.", iconCls: "w-4 h-4 text-violet-400", bgCls: "bg-violet-500/10" },
-    { icon: icons.tag, title: "Auto-Tagging", desc: "AI generates tags and categories. Knowledge organizes itself.", iconCls: "w-4 h-4 text-indigo-400", bgCls: "bg-indigo-500/10" },
-    { icon: icons.sparkles, title: "Export Anywhere", desc: "Send notes to Notion, Obsidian, or Markdown.", iconCls: "w-4 h-4 text-purple-400", bgCls: "bg-purple-500/10" },
+    {
+      title: "Capture without clutter",
+      description: "Save articles, pages, and thoughts into one clean place.",
+      icon: icons.link,
+      tone: "bg-[#eef0ff] text-[#4f46e5]",
+    },
+    {
+      title: "Summaries you can skim",
+      description: "Readable takeaways instead of walls of AI text.",
+      icon: icons.document,
+      tone: "bg-[#fff3e0] text-[#d97706]",
+    },
+    {
+      title: "Connections that resurface",
+      description: "New notes automatically connect with older ideas.",
+      icon: icons.brain,
+      tone: "bg-[#f4f4ff] text-[#4338ca]",
+    },
+    {
+      title: "Search like memory",
+      description: "Find what you meant, not just exact matching words.",
+      icon: icons.search,
+      tone: "bg-[#fff6ea] text-[#b45309]",
+    },
+    {
+      title: "Gentle organization",
+      description: "Tags and structure appear without becoming busy work.",
+      icon: icons.tag,
+      tone: "bg-[#eef0ff] text-[#4f46e5]",
+    },
+    {
+      title: "Portable notes",
+      description: "Export what you save when you want to take it elsewhere.",
+      icon: icons.sparkles,
+      tone: "bg-[#fff3e0] text-[#d97706]",
+    },
   ];
 
   return (
-    <section id="features" className="py-10">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-6">
-          <p className="text-violet-400 text-[10px] font-medium uppercase tracking-wider mb-1">Features</p>
-          <h2 className="text-xl sm:text-2xl font-bold mb-1">
-            Everything Your Brain <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">Can&#39;t Do</span>
+    <section id="features" className="px-4 py-14 sm:py-20">
+      <div className="mx-auto max-w-6xl">
+        <ScrollReveal className="max-w-2xl">
+          <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">Features</p>
+          <h2 className="mt-3 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+            Light, minimal, and made for{" "}
+            <span className="gradient-text">daily thinking</span>.
           </h2>
-          <p className="text-gray-400 text-xs max-w-md mx-auto">Stop losing knowledge. ContextMe remembers, connects, and makes it searchable.</p>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          {features.map((f, i) => (
-            <div key={i} className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-3 transition-all hover:scale-[1.02]">
-              <div className={`w-7 h-7 rounded-lg ${f.bgCls} flex items-center justify-center mb-1.5`}>
-                {f.icon(f.iconCls)}
+          <p className="mt-4 text-base leading-8 text-[#6b645f]">
+            Morning Pages keeps ContextMe clean and approachable. It feels like opening a favorite notebook, not a technical workspace.
+          </p>
+        </ScrollReveal>
+
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {features.map((feature, index) => (
+            <ScrollReveal key={feature.title} delayMs={index * 80}>
+              <div className="glass-card-hover p-6">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${feature.tone}`}>
+                  {feature.icon("h-5 w-5")}
+                </div>
+                <h3 className="mt-5 text-xl font-medium text-[#1c1917]">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[#6b645f]">{feature.description}</p>
               </div>
-              <h3 className="text-xs font-semibold mb-0.5">{f.title}</h3>
-              <p className="text-gray-400 text-[11px] leading-relaxed">{f.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -128,35 +192,41 @@ function FeaturesSection() {
   );
 }
 
-// ─── How It Works ───────────────────────────────────────────
 function HowItWorksSection() {
   const steps = [
-    { num: "01", title: "Paste or Save", desc: "Drop any link or text. Use the browser extension for one-click saving." },
-    { num: "02", title: "AI Extracts & Connects", desc: "AI pulls insights and finds connections to your existing knowledge." },
-    { num: "03", title: "Search & Discover", desc: "Ask in natural language. Get daily digests. Watch your brain grow." },
+    ["01", "Save something", "Paste a link or note the moment it feels important."],
+    ["02", "Let it settle", "ContextMe extracts the useful parts and keeps the rest quiet."],
+    ["03", "Return later", "Search in plain language and recover the right context quickly."],
   ];
 
   return (
-    <section id="how-it-works" className="py-10 relative">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-violet-600/8 rounded-full blur-[80px]" />
-      </div>
-      <div className="relative z-10 max-w-3xl mx-auto px-4">
-        <div className="text-center mb-6">
-          <p className="text-violet-400 text-[10px] font-medium uppercase tracking-wider mb-1">How It Works</p>
-          <h2 className="text-xl sm:text-2xl font-bold">
-            Three Steps to a <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">Smarter You</span>
-          </h2>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {steps.map((s, i) => (
-            <div key={i} className="text-center">
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 mb-2">
-                <span className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">{s.num}</span>
+    <section id="how-it-works" className="px-4 py-14 sm:py-20">
+      <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <ScrollReveal>
+          <div className="glass-card p-8 sm:p-10">
+            <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">How It Works</p>
+            <h2 className="mt-3 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+              Simple enough to use every day.
+            </h2>
+            <p className="mt-4 text-base leading-8 text-[#6b645f]">
+              The goal is not to build a complicated knowledge machine. It is to make memory, reflection, and recall feel natural.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="space-y-4">
+          {steps.map(([num, title, desc], index) => (
+            <ScrollReveal key={title} delayMs={index * 90}>
+              <div className="glass-card-hover flex gap-4 p-5 sm:p-6">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eef0ff] text-sm font-semibold text-[#4f46e5]">
+                  {num}
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#1c1917]">{title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[#6b645f]">{desc}</p>
+                </div>
               </div>
-              <h3 className="text-xs font-semibold mb-1">{s.title}</h3>
-              <p className="text-gray-400 text-[11px] leading-relaxed">{s.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -164,153 +234,250 @@ function HowItWorksSection() {
   );
 }
 
-// ─── Pricing ────────────────────────────────────────────────
 function PricingSection() {
+  const plans = [
+    {
+      name: "Free",
+      price: "$0",
+      desc: "Start building the habit.",
+      features: ["50 saves per month", "AI summaries", "Smart search", "Auto tags"],
+      button: "border border-[rgba(28,25,23,0.08)] bg-white text-[#6b645f] hover:text-[#1c1917]",
+    },
+    {
+      name: "Pro",
+      price: "$12",
+      desc: "For people who use ContextMe every day.",
+      features: ["Unlimited saves", "Deeper connections", "Daily digest", "Markdown and PDF export"],
+      button: "bg-[#4f46e5] text-white hover:bg-[#4338ca]",
+      highlight: true,
+    },
+    {
+      name: "Team",
+      price: "$29",
+      desc: "Shared memory for small teams.",
+      features: ["Everything in Pro", "Shared knowledge", "Team recall", "Priority support"],
+      button: "border border-[rgba(28,25,23,0.08)] bg-white text-[#6b645f] hover:text-[#1c1917]",
+    },
+  ];
+
   return (
-    <section id="pricing" className="py-10">
-      <div className="max-w-3xl mx-auto px-4">
-        <div className="text-center mb-6">
-          <p className="text-violet-400 text-[10px] font-medium uppercase tracking-wider mb-1">Pricing</p>
-          <h2 className="text-xl sm:text-2xl font-bold">
-            Start Free, <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">Scale Smart</span>
+    <section id="pricing" className="px-4 py-14 sm:py-20">
+      <div className="mx-auto max-w-6xl">
+        <ScrollReveal className="text-center">
+          <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">Pricing</p>
+          <h2 className="mt-3 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+            Start simple, then grow with your notes.
           </h2>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          {/* Free */}
-          <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-            <h3 className="text-xs font-semibold">Free</h3>
-            <p className="text-gray-500 text-[10px] mb-2">Get started</p>
-            <div className="mb-2"><span className="text-xl font-bold">$0</span><span className="text-gray-500 text-[10px]">/mo</span></div>
-            <ul className="space-y-1 text-[10px] text-gray-300 mb-3">
-              <li>&#10003; 50 saves/month</li>
-              <li>&#10003; Basic AI insights</li>
-              <li>&#10003; Smart search</li>
-              <li className="text-gray-600">&#10003; Connection mapping</li>
-            </ul>
-            <Link href="/extract" className="block w-full py-1.5 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-medium transition-colors text-center">Get Started</Link>
-          </div>
-          {/* Pro */}
-          <div className="rounded-xl border-2 border-violet-500/40 bg-gradient-to-br from-violet-500/10 to-indigo-500/5 p-4 relative">
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[9px] font-medium px-2 py-0.5 rounded-full">Popular</div>
-            <h3 className="text-xs font-semibold">Pro</h3>
-            <p className="text-gray-500 text-[10px] mb-2">For power users</p>
-            <div className="mb-2"><span className="text-xl font-bold">$12</span><span className="text-gray-500 text-[10px]">/mo</span></div>
-            <ul className="space-y-1 text-[10px] text-gray-300 mb-3">
-              <li>&#10003; Unlimited saves</li>
-              <li>&#10003; Advanced AI insights</li>
-              <li>&#10003; Connection mapping</li>
-              <li>&#10003; Daily digests</li>
-              <li>&#10003; Export to Notion</li>
-            </ul>
-            <button className="w-full py-1.5 rounded-full bg-violet-600 hover:bg-violet-500 text-[10px] font-medium transition-colors">Start Pro Trial</button>
-          </div>
-          {/* Team */}
-          <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4">
-            <h3 className="text-xs font-semibold">Team</h3>
-            <p className="text-gray-500 text-[10px] mb-2">Shared power</p>
-            <div className="mb-2"><span className="text-xl font-bold">$29</span><span className="text-gray-500 text-[10px]">/user/mo</span></div>
-            <ul className="space-y-1 text-[10px] text-gray-300 mb-3">
-              <li>&#10003; Everything in Pro</li>
-              <li>&#10003; Shared knowledge base</li>
-              <li>&#10003; Team connections</li>
-              <li>&#10003; Admin dashboard</li>
-              <li>&#10003; Priority support</li>
-            </ul>
-            <button className="w-full py-1.5 rounded-full border border-white/10 hover:border-white/20 text-[10px] font-medium transition-colors">Contact Sales</button>
-          </div>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[#6b645f]">
+            The pricing stays straightforward and the presentation stays light, so the product feels useful instead of salesy.
+          </p>
+        </ScrollReveal>
+
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {plans.map((plan, index) => (
+            <ScrollReveal key={plan.name} delayMs={index * 90}>
+              <div
+                className={`glass-card relative p-6 sm:p-7 ${plan.highlight ? "border-[rgba(79,70,229,0.18)] shadow-[0_22px_50px_rgba(79,70,229,0.12)]" : ""}`}
+              >
+                {plan.highlight && (
+                  <div className="absolute -top-3 left-6 rounded-full bg-[#4f46e5] px-3 py-1 text-xs font-medium text-white">
+                    Most popular
+                  </div>
+                )}
+                <p className="text-sm uppercase tracking-[0.18em] text-[#a8a29e]">{plan.name}</p>
+                <div className="mt-4 flex items-end gap-2">
+                  <span className="text-4xl font-semibold text-[#1c1917]">{plan.price}</span>
+                  <span className="pb-1 text-sm text-[#8a817b]">/month</span>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-[#6b645f]">{plan.desc}</p>
+                <div className="mt-6 space-y-3">
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={feature} className="flex items-start gap-2 text-sm text-[#57534e]">
+                      {icons.check(`mt-0.5 h-4 w-4 ${featureIndex % 2 === 0 ? "text-[#4f46e5]" : "text-[#d97706]"}`)}
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <button className={`mt-8 w-full rounded-full px-4 py-3 text-sm font-medium transition-all ${plan.button}`}>
+                  {plan.name === "Team" ? "Contact Us" : `Choose ${plan.name}`}
+                </button>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-// ─── CTA ────────────────────────────────────────────────────
+function LearnMoreSection() {
+  return (
+    <section id="learn-more" className="px-4 py-14 sm:py-20">
+      <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1.08fr_0.92fr]">
+        <ScrollReveal>
+          <div className="glass-card p-8">
+            <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">Learn More</p>
+            <h2 className="mt-3 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+              Built for calm productivity, not dashboard fatigue.
+            </h2>
+            <p className="mt-4 text-base leading-8 text-[#6b645f]">
+              Morning Pages is the most mainstream-friendly direction for ContextMe. The interface feels clean, soft, and familiar, while the product still does serious knowledge work underneath.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/extract" className="rounded-full bg-[#4f46e5] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]">
+                Try the Extractor
+              </Link>
+              <Link href="/history" className="rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-5 py-3 text-sm font-medium text-[#6b645f] transition-all hover:text-[#1c1917]">
+                View History
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <div className="space-y-4">
+          <ScrollReveal delayMs={80}>
+            <div className="glass-card-hover p-6">
+              <div className="flex items-center gap-2 text-sm text-[#4f46e5]">
+                {icons.document("h-4 w-4")}
+                Product notes
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[#6b645f]">
+                The notebook-paper texture stays subtle so the product feels distinctive without becoming decorative noise.
+              </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delayMs={160}>
+            <div className="glass-card-hover p-6">
+              <div className="flex items-center gap-2 text-sm text-[#d97706]">
+                {icons.tag("h-4 w-4")}
+                Contact
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[#6b645f]">
+                Want a custom workflow, team setup, or a different visual direction? Reach out and we can keep refining it.
+              </p>
+              <a href="mailto:hello@contextme.app" className="mt-4 inline-flex text-sm text-[#d97706] hover:text-[#b45309] transition-colors">
+                hello@contextme.app
+              </a>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CTASection() {
   return (
-    <section className="py-10 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] bg-violet-600/15 rounded-full blur-[80px]" />
-      </div>
-      <div className="relative z-10 max-w-xl mx-auto px-4 text-center">
-        {icons.brain("w-8 h-8 text-violet-400 mx-auto mb-2")}
-        <h2 className="text-xl sm:text-2xl font-bold mb-2">
-          Stop Forgetting. <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">Start Connecting.</span>
-        </h2>
-        <p className="text-xs text-gray-400 mb-4 max-w-sm mx-auto">
-          Join thousands using ContextMe as their AI-powered second brain. Free to start.
-        </p>
-        <Link href="/extract" className="group inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-sm font-medium transition-all hover:scale-105">
-          Get Started for Free
-          {icons.arrow("w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform")}
-        </Link>
-      </div>
+    <section className="px-4 py-14 sm:py-20">
+      <ScrollReveal>
+        <div className="mx-auto max-w-5xl rounded-[36px] border border-[rgba(28,25,23,0.08)] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(255,243,224,0.7),rgba(238,240,255,0.75))] px-6 py-10 text-center shadow-[0_24px_60px_rgba(28,25,23,0.08)] sm:px-10 sm:py-14">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[20px] bg-[#eef0ff]">
+            {icons.brain("h-7 w-7 text-[#4f46e5]")}
+          </div>
+          <h2 className="mt-6 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+            Make remembering feel quiet and easy.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[#6b645f]">
+            ContextMe gives your thoughts a clean place to land, connect, and come back when you need them.
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#4f46e5] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
+            >
+              Get Started for Free
+              {icons.arrow("h-4 w-4")}
+            </Link>
+            <a
+              href="mailto:hello@contextme.app"
+              className="inline-flex items-center justify-center rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-6 py-3 text-sm font-medium text-[#6b645f] transition-all hover:text-[#1c1917]"
+            >
+              Contact Us
+            </a>
+          </div>
+        </div>
+      </ScrollReveal>
     </section>
   );
 }
 
-// ─── Footer ─────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="border-t border-white/5 py-6">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="grid grid-cols-4 gap-6 mb-4">
-          <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              {icons.brain("w-4 h-4 text-violet-400")}
-              <span className="text-xs font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">ContextMe</span>
+    <footer className="px-4 pb-12 pt-8">
+      <div className="mx-auto max-w-6xl border-t border-[rgba(28,25,23,0.08)] pt-8">
+        <div className="grid gap-8 md:grid-cols-4">
+          <ScrollReveal>
+            <div>
+              <div className="flex items-center gap-2">
+                {icons.brain("w-5 h-5 text-[#4f46e5]")}
+                <span className="text-sm font-semibold gradient-text">ContextMe</span>
+              </div>
+              <p className="mt-3 text-sm leading-7 text-[#6b645f]">
+                A soft, structured home for links, notes, and personal context.
+              </p>
             </div>
-            <p className="text-gray-500 text-[10px] leading-relaxed">AI second brain that remembers and connects.</p>
-          </div>
-          <div>
-            <h4 className="text-[11px] font-semibold mb-1.5 text-gray-300">Product</h4>
-            <ul className="space-y-0.5 text-[10px] text-gray-500">
-              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-              <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Extension</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-[11px] font-semibold mb-1.5 text-gray-300">Company</h4>
-            <ul className="space-y-0.5 text-[10px] text-gray-500">
-              <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-[11px] font-semibold mb-1.5 text-gray-300">Legal</h4>
-            <ul className="space-y-0.5 text-[10px] text-gray-500">
-              <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-            </ul>
-          </div>
+          </ScrollReveal>
+
+          <ScrollReveal delayMs={70}>
+            <div>
+              <h3 className="text-sm font-medium text-[#1c1917]">Product</h3>
+              <div className="mt-3 space-y-2 text-sm text-[#6b645f]">
+                <a href="#features" className="block hover:text-[#1c1917] transition-colors">Features</a>
+                <a href="#pricing" className="block hover:text-[#1c1917] transition-colors">Pricing</a>
+                <a href="#learn-more" className="block hover:text-[#1c1917] transition-colors">Learn More</a>
+                <Link href="/extract" className="block hover:text-[#1c1917] transition-colors">Extractor</Link>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delayMs={140}>
+            <div>
+              <h3 className="text-sm font-medium text-[#1c1917]">Company</h3>
+              <div className="mt-3 space-y-2 text-sm text-[#6b645f]">
+                <a href="#learn-more" className="block hover:text-[#1c1917] transition-colors">About</a>
+                <a href="mailto:hello@contextme.app" className="block hover:text-[#1c1917] transition-colors">Contact</a>
+                <a href="mailto:hello@contextme.app?subject=Partnership" className="block hover:text-[#1c1917] transition-colors">Partnerships</a>
+                <a href="mailto:hello@contextme.app?subject=Support" className="block hover:text-[#1c1917] transition-colors">Support</a>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delayMs={210}>
+            <div>
+              <h3 className="text-sm font-medium text-[#1c1917]">Resources</h3>
+              <div className="mt-3 space-y-2 text-sm text-[#6b645f]">
+                <Link href="/history" className="block hover:text-[#1c1917] transition-colors">History</Link>
+                <Link href="/login" className="block hover:text-[#1c1917] transition-colors">Log In</Link>
+                <Link href="/signup" className="block hover:text-[#1c1917] transition-colors">Sign Up</Link>
+                <a href="mailto:hello@contextme.app" className="block hover:text-[#1c1917] transition-colors">hello@contextme.app</a>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
-        <div className="border-t border-white/5 pt-3 flex items-center justify-between text-[10px] text-gray-600">
-          <p>&copy; 2026 ContextMe. All rights reserved.</p>
-          <div className="flex items-center gap-3">
-            <a href="#" className="hover:text-white transition-colors">Twitter</a>
-            <a href="#" className="hover:text-white transition-colors">GitHub</a>
-            <a href="#" className="hover:text-white transition-colors">Discord</a>
+
+        <ScrollReveal className="mt-8 flex flex-col gap-3 border-t border-[rgba(28,25,23,0.08)] pt-6 text-sm text-[#8a817b] sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 ContextMe. All rights reserved.</p>
+          <div className="flex gap-4">
+            <a href="#features" className="hover:text-[#1c1917] transition-colors">Features</a>
+            <a href="#pricing" className="hover:text-[#1c1917] transition-colors">Pricing</a>
+            <a href="#learn-more" className="hover:text-[#1c1917] transition-colors">Learn More</a>
+            <a href="mailto:hello@contextme.app" className="hover:text-[#1c1917] transition-colors">Contact</a>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </footer>
   );
 }
 
-// ─── Main Page ──────────────────────────────────────────────
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Navbar variant="landing" />
       <HeroSection />
-      <StatsSection />
       <FeaturesSection />
       <HowItWorksSection />
       <PricingSection />
+      <LearnMoreSection />
       <CTASection />
       <Footer />
     </main>

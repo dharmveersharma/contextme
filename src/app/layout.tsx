@@ -20,12 +20,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} antialiased bg-[#0a0a0f] text-white`}
+        className={`${geistSans.variable} antialiased bg-[#faf8f5] text-[#1c1917]`}
         style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}
       >
-        {children}
+        <div className="mesh-gradient">
+          <div className="mesh-blob mesh-blob-violet" />
+          <div className="mesh-blob mesh-blob-teal" />
+          <div className="mesh-blob mesh-blob-amber" />
+        </div>
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );

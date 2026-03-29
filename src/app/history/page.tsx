@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { HistoryItem, ExtractedInsights } from "@/lib/types";
 import {
@@ -13,7 +13,6 @@ import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
 import { icons } from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
 
-// Helper: convert HistoryItem (snake_case) to ExtractedInsights (camelCase) for export functions
 function toExtractedInsights(item: HistoryItem): ExtractedInsights {
   return {
     title: item.title,
@@ -24,7 +23,6 @@ function toExtractedInsights(item: HistoryItem): ExtractedInsights {
   };
 }
 
-// ─── History Card ───────────────────────────────────────────
 function HistoryCard({
   item,
   isExpanded,
@@ -38,119 +36,81 @@ function HistoryCard({
 }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
-
   const exportData = toExtractedInsights(item);
 
   return (
-    <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent transition-all hover:border-violet-500/25 hover:bg-violet-500/[0.03]">
-      {/* Card Header — always visible */}
-      <div className="p-4 cursor-pointer select-none" onClick={onToggle}>
+    <div className="glass-card-hover overflow-hidden">
+      <button type="button" className="w-full p-5 text-left" onClick={onToggle}>
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-white truncate">{item.title}</h3>
-            <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">
-              {item.summary}
-            </p>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-lg font-medium text-[#2f241d]">{item.title}</h3>
+            <p className="mt-2 line-clamp-2 text-sm leading-7 text-[#6f5e52]">{item.summary}</p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1 text-gray-600 text-[10px]">
-              {icons.clock("w-3 h-3")}
+          <div className="shrink-0 text-right">
+            <div className="flex items-center gap-1 text-xs text-[#8a817b]">
+              {icons.clock("w-3.5 h-3.5")}
               <span>{formatRelativeTime(item.created_at)}</span>
             </div>
-            {isExpanded
-              ? icons.chevronUp("w-4 h-4 text-gray-500")
-              : icons.chevronDown("w-4 h-4 text-gray-500")}
+            <div className="mt-2 flex justify-end text-[#8a817b]">
+              {isExpanded ? icons.chevronUp("w-4 h-4") : icons.chevronDown("w-4 h-4")}
+            </div>
           </div>
         </div>
 
-        {/* Tags — always visible */}
         {item.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {item.tags.slice(0, 5).map((tag, i) => (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {item.tags.slice(0, 5).map((tag) => (
               <span
-                key={i}
-                className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-[10px]"
+                key={tag}
+                className="rounded-full bg-[#eef0ff] px-3 py-1 text-xs text-[#4f46e5]"
               >
                 {tag}
               </span>
             ))}
             {item.tags.length > 5 && (
-              <span className="text-[10px] text-gray-500">+{item.tags.length - 5} more</span>
+              <span className="px-2 py-1 text-xs text-[#8a817b]">+{item.tags.length - 5} more</span>
             )}
           </div>
         )}
-      </div>
+      </button>
 
-      {/* Expanded Details */}
       {isExpanded && (
-        <div className="px-4 pb-4 border-t border-white/5 pt-3 space-y-3 animate-slide-down">
-          {/* Full Summary */}
+        <div className="border-t border-[rgba(114,84,62,0.1)] px-5 pb-5 pt-4 animate-slide-down">
           <div>
-            <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1 font-medium">
-              Summary
-            </p>
-            <p className="text-xs text-gray-300 leading-relaxed">{item.summary}</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Summary</p>
+            <p className="mt-2 text-sm leading-7 text-[#5d4e43]">{item.summary}</p>
           </div>
 
-          {/* Key Insights — numbered badges */}
           {item.key_points.length > 0 && (
-            <div>
-              <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1.5 font-medium">
-                Key Insights
-              </p>
-              <div className="space-y-2">
-                {item.key_points.map((point, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-2.5 p-2 rounded-lg bg-white/[0.02] border-l-2 border-violet-500/25"
-                  >
-                    <span className="shrink-0 w-5 h-5 rounded bg-violet-500/15 flex items-center justify-center text-[10px] font-bold text-violet-300">
-                      {i + 1}
+            <div className="mt-5">
+              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">Key takeaways</p>
+              <div className="mt-3 space-y-3">
+                {item.key_points.map((point, index) => (
+                  <div key={index} className="flex items-start gap-3 rounded-[20px] bg-[#fffdf9] p-4">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#eef0ff] text-xs font-semibold text-[#4f46e5]">
+                      {index + 1}
                     </span>
-                    <span className="text-xs text-gray-300 leading-relaxed">{point}</span>
+                    <span className="text-sm leading-7 text-[#5d4e43]">{point}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* All Tags */}
-          {item.tags.length > 0 && (
-            <div>
-              <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1.5 font-medium">
-                Tags
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {item.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-[10px]"
-                  >
-                    {icons.tag("w-2.5 h-2.5")}
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Source URL */}
-          <div className="flex items-center gap-1.5 pt-1">
-            {icons.externalLink("w-3 h-3 text-gray-500 shrink-0")}
+          <div className="mt-5 flex items-center gap-2">
+            {icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
             <a
               href={item.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate"
-              onClick={(e) => e.stopPropagation()}
+              className="truncate text-sm text-[#8a817b] transition-colors hover:text-[#4f46e5]"
             >
               {item.source_url}
             </a>
           </div>
 
-          {/* Export + Delete Actions */}
-          <div className="flex items-center justify-between pt-2" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2">
+          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={async () => {
                   const ok = await copyToClipboard(exportData);
@@ -159,66 +119,61 @@ function HistoryCard({
                     setTimeout(() => setCopiedToast(false), 2000);
                   }
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
-                title="Copy to clipboard"
+                className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
               >
-                {icons.clipboard("w-3 h-3")}
+                {icons.clipboard("w-3.5 h-3.5")}
                 Copy
               </button>
               <button
                 onClick={() => downloadAsMarkdown(exportData)}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
-                title="Download as Markdown"
+                className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
               >
-                {icons.document("w-3 h-3")}
+                {icons.document("w-3.5 h-3.5")}
                 Markdown
               </button>
               <button
                 onClick={() => printAsPdf(exportData)}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
-                title="Download as PDF"
+                className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#6b645f] transition-all hover:border-[rgba(79,70,229,0.16)] hover:bg-[#eef0ff] hover:text-[#4f46e5]"
               >
-                {icons.download("w-3 h-3")}
+                {icons.download("w-3.5 h-3.5")}
                 PDF
               </button>
             </div>
 
-            {/* Delete Button */}
             {showDeleteConfirm ? (
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] text-red-400">Delete?</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-red-500">Delete this note?</span>
                 <button
                   onClick={() => {
                     onDelete();
                     setShowDeleteConfirm(false);
                   }}
-                  className="text-[10px] text-red-400 hover:text-red-300 font-medium px-2 py-0.5 rounded border border-red-500/30 hover:border-red-500/50 transition-colors"
+                  className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-medium text-white"
                 >
-                  Yes
+                  Delete
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="text-[10px] text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded border border-white/10 hover:border-white/20 transition-colors"
+                  className="rounded-full border border-[rgba(28,25,23,0.08)] px-3 py-1.5 text-xs text-[#6b645f]"
                 >
-                  No
+                  Cancel
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="shrink-0 p-1.5 rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-all"
-                title="Delete this item"
+                className="flex items-center gap-2 rounded-xl border border-[rgba(28,25,23,0.08)] px-4 py-2 text-xs text-[#8a817b] transition-all hover:border-red-200 hover:text-red-500"
               >
                 {icons.trash("w-3.5 h-3.5")}
+                Delete
               </button>
             )}
           </div>
 
-          {/* Copied Toast inside card */}
           {copiedToast && (
-            <div className="flex items-center gap-1.5 text-green-400 text-[10px] font-medium pt-1">
-              {icons.check("w-3 h-3")}
-              Copied to clipboard!
+            <div className="mt-3 flex items-center gap-2 text-xs text-[#d97706]">
+              {icons.check("w-3.5 h-3.5")}
+              Copied to clipboard
             </div>
           )}
         </div>
@@ -227,33 +182,30 @@ function HistoryCard({
   );
 }
 
-// ─── Empty State ────────────────────────────────────────────
-function EmptyState({ hasSearchQuery }: { hasSearchQuery: boolean }) {
-  if (hasSearchQuery) {
+function EmptyState({ filtered }: { filtered: boolean }) {
+  if (filtered) {
     return (
-      <div className="max-w-md mx-auto text-center py-12">
-        <div className="rounded-xl border border-dashed border-white/10 p-8">
-          {icons.search("w-10 h-10 text-gray-700 mx-auto mb-3")}
-          <p className="text-sm text-gray-500 mb-1">No results found</p>
-          <p className="text-xs text-gray-600">Try a different search term or clear filters</p>
+      <div className="mx-auto max-w-xl text-center">
+        <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
+          {icons.search("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
+          <p className="text-base text-[#5d4e43]">No saved notes match that filter.</p>
+          <p className="mt-2 text-sm text-[#8a786a]">Try a different keyword or clear the selected tag.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto text-center py-12">
-      <div className="rounded-xl border border-dashed border-white/10 p-8">
-        {icons.brain("w-10 h-10 text-gray-700 mx-auto mb-3")}
-        <p className="text-sm text-gray-500 mb-1">No extractions yet</p>
-        <p className="text-xs text-gray-600 mb-4">
-          Start building your knowledge base by extracting insights from URLs
-        </p>
+    <div className="mx-auto max-w-xl text-center">
+      <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
+        {icons.brain("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
+        <p className="text-base text-[#5d4e43]">Your library is still empty.</p>
+        <p className="mt-2 text-sm text-[#8a786a]">Save your first article or note and it will show up here.</p>
         <Link
           href="/extract"
-          className="inline-flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-full text-xs font-medium transition-all hover:scale-105"
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
         >
-          {icons.sparkles("w-3.5 h-3.5")}
+          {icons.sparkles("w-4 h-4")}
           Extract Your First URL
         </Link>
       </div>
@@ -261,7 +213,6 @@ function EmptyState({ hasSearchQuery }: { hasSearchQuery: boolean }) {
   );
 }
 
-// ─── Main History Page ──────────────────────────────────────
 export default function HistoryPage() {
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -278,18 +229,15 @@ export default function HistoryPage() {
       .catch((err) => console.error("Failed to load history:", err));
   }, []);
 
-  // Collect all unique tags
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
     items.forEach((item) => item.tags.forEach((tag) => tagSet.add(tag)));
     return Array.from(tagSet).sort();
   }, [items]);
 
-  // Apply search, tag filter, and sort (all client-side on fetched items)
   const displayItems = useMemo(() => {
     let result = items;
 
-    // Client-side text search
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter(
@@ -300,14 +248,12 @@ export default function HistoryPage() {
       );
     }
 
-    // Tag filter
     if (selectedTag) {
       result = result.filter((item) =>
         item.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
       );
     }
 
-    // Sort order
     if (sortOrder === "oldest") {
       result = [...result].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -315,7 +261,7 @@ export default function HistoryPage() {
     }
 
     return result;
-  }, [searchQuery, items, selectedTag, sortOrder]);
+  }, [items, searchQuery, selectedTag, sortOrder]);
 
   async function handleDelete(id: string) {
     try {
@@ -340,22 +286,17 @@ export default function HistoryPage() {
     }
   }
 
-  // Pre-mount loading skeleton
   if (!mounted) {
     return (
       <main className="min-h-screen">
         <Navbar />
-        <div className="pt-20 max-w-3xl mx-auto px-4">
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent p-4 animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.05}s` }}
-              >
-                <div className="h-4 w-2/3 skeleton-block rounded mb-2" />
-                <div className="h-3 w-full skeleton-block rounded mb-1" />
-                <div className="h-3 w-4/5 skeleton-block rounded" />
+        <div className="mx-auto max-w-4xl px-4 pt-32">
+          <div className="space-y-4">
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="glass-card p-6 animate-fade-in-up">
+                <div className="h-5 w-1/3 skeleton-block rounded mb-3" />
+                <div className="h-3.5 w-full skeleton-block rounded mb-2" />
+                <div className="h-3.5 w-5/6 skeleton-block rounded" />
               </div>
             ))}
           </div>
@@ -368,44 +309,35 @@ export default function HistoryPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      {/* Header Section */}
-      <section className="pt-20 pb-4 relative">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[400px] h-[250px] bg-violet-600/15 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="relative z-10 max-w-3xl mx-auto px-4">
-          {/* Title Row */}
-          <div className="flex items-center justify-between mb-4 animate-fade-in-up">
+      <section className="px-4 pt-32 pb-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-2xl font-bold">
-                Your{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400">
-                  Knowledge Base
-                </span>
+              <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">Your library</p>
+              <h1 className="mt-3 text-3xl font-semibold text-[#2f241d] sm:text-4xl">
+                A warmer archive for what you want to remember.
               </h1>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="mt-4 max-w-2xl text-base leading-8 text-[#6f5e52]">
                 {items.length === 0
-                  ? "No extractions saved yet"
-                  : `${items.length} extraction${items.length === 1 ? "" : "s"} saved`}
+                  ? "No saved notes yet."
+                  : `${items.length} saved item${items.length === 1 ? "" : "s"} ready to revisit.`}
               </p>
             </div>
 
-            {/* Clear All Button */}
             {items.length > 0 && (
               <div>
                 {showClearConfirm ? (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-red-400">Clear all?</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm text-red-500">Clear all saved notes?</span>
                     <button
                       onClick={handleClearAll}
-                      className="text-[10px] text-red-400 hover:text-red-300 font-medium px-2.5 py-1 rounded border border-red-500/30 hover:border-red-500/50 transition-colors"
+                      className="rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white"
                     >
-                      Yes, clear
+                      Clear all
                     </button>
                     <button
                       onClick={() => setShowClearConfirm(false)}
-                      className="text-[10px] text-gray-500 hover:text-gray-300 px-2.5 py-1 rounded border border-white/10 hover:border-white/20 transition-colors"
+                      className="rounded-full border border-[rgba(28,25,23,0.08)] px-4 py-2 text-sm text-[#6b645f]"
                     >
                       Cancel
                     </button>
@@ -413,9 +345,8 @@ export default function HistoryPage() {
                 ) : (
                   <button
                     onClick={() => setShowClearConfirm(true)}
-                    className="flex items-center gap-1.5 text-[10px] text-gray-500 hover:text-red-400 px-3 py-1.5 rounded-lg border border-white/10 hover:border-red-500/30 transition-all"
+                    className="rounded-full border border-[rgba(28,25,23,0.08)] px-4 py-2 text-sm text-[#6b645f] transition-all hover:border-red-200 hover:text-red-500"
                   >
-                    {icons.trash("w-3 h-3")}
                     Clear All
                   </button>
                 )}
@@ -423,104 +354,85 @@ export default function HistoryPage() {
             )}
           </div>
 
-          {/* Search Bar */}
           {items.length > 0 && (
-            <div className="relative mb-4 animate-fade-in-up stagger-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                {icons.search("w-4 h-4 text-gray-500")}
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, summary, or tags..."
-                className="w-full pl-9 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-gray-500 focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/25 focus:outline-none transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
-                >
-                  {icons.close("w-4 h-4")}
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Tag Filter Bar */}
-          {items.length > 0 && allTags.length > 0 && (
-            <div className="mb-4 animate-fade-in-up stagger-2">
-              <div className="flex items-center gap-2 mb-2">
-                {icons.tag("w-3 h-3 text-gray-500")}
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Filter by tag</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedTag && (
+            <>
+              <div className="relative mt-8">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  {icons.search("w-4 h-4 text-[#a8a29e]")}
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by title, summary, or tags..."
+                  className="w-full rounded-[24px] border border-[rgba(28,25,23,0.08)] bg-white py-3 pl-11 pr-11 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none"
+                />
+                {searchQuery && (
                   <button
-                    onClick={() => setSelectedTag(null)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/10 text-gray-400 hover:text-white text-[10px] transition-all hover:border-white/20"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8a817b] transition-colors hover:text-[#1c1917]"
                   >
-                    {icons.close("w-2.5 h-2.5")}
-                    Clear
+                    {icons.close("w-4 h-4")}
                   </button>
                 )}
-                {allTags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] transition-all ${
-                      selectedTag === tag
-                        ? "bg-violet-500/20 border border-violet-500/40 text-violet-300 font-medium"
-                        : "bg-violet-500/5 border border-violet-500/15 text-gray-400 hover:text-violet-300 hover:border-violet-500/25"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
               </div>
-            </div>
-          )}
 
-          {/* Sort + Results Count Row */}
-          {items.length > 0 && (
-            <div className="flex items-center justify-between mb-3 animate-fade-in-up stagger-3">
-              <p className="text-xs text-gray-500">
-                {searchQuery.trim() || selectedTag
-                  ? `${displayItems.length} result${displayItems.length === 1 ? "" : "s"}`
-                  : `${items.length} total`}
-                {searchQuery.trim() && ` for \u201c${searchQuery}\u201d`}
-                {selectedTag && ` tagged \u201c${selectedTag}\u201d`}
-              </p>
-              <button
-                onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-                className="flex items-center gap-1.5 text-[10px] text-gray-500 hover:text-violet-300 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/25 transition-all"
-              >
-                {icons.sort("w-3 h-3")}
-                {sortOrder === "newest" ? "Newest First" : "Oldest First"}
-              </button>
-            </div>
+              {allTags.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {selectedTag && (
+                    <button
+                      onClick={() => setSelectedTag(null)}
+                      className="rounded-full border border-[rgba(28,25,23,0.08)] px-3 py-1.5 text-xs text-[#6b645f]"
+                    >
+                      Clear filter
+                    </button>
+                  )}
+                  {allTags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                      className={`rounded-full px-3 py-1.5 text-xs transition-all ${
+                        selectedTag === tag
+                          ? "bg-[#4f46e5] text-white"
+                          : "bg-[#eef0ff] text-[#4f46e5]"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-col gap-3 text-sm text-[#8a817b] sm:flex-row sm:items-center sm:justify-between">
+                <p>
+                  {displayItems.length} result{displayItems.length === 1 ? "" : "s"}
+                  {searchQuery.trim() && ` for "${searchQuery}"`}
+                  {selectedTag && ` in ${selectedTag}`}
+                </p>
+                <button
+                  onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
+                  className="flex items-center gap-2 rounded-full border border-[rgba(28,25,23,0.08)] px-4 py-2 text-sm text-[#6b645f]"
+                >
+                  {icons.sort("w-4 h-4")}
+                  {sortOrder === "newest" ? "Newest first" : "Oldest first"}
+                </button>
+              </div>
+            </>
           )}
         </div>
       </section>
 
-      {/* History Cards */}
-      <section className="max-w-3xl mx-auto px-4 pb-12">
+      <section className="mx-auto max-w-4xl px-4 pb-12">
         {displayItems.length === 0 ? (
-          <EmptyState hasSearchQuery={!!(searchQuery.trim() || selectedTag)} />
+          <EmptyState filtered={Boolean(searchQuery.trim() || selectedTag)} />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {displayItems.map((item, index) => (
-              <div
-                key={item.id}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${Math.min(index * 0.05, 0.3)}s` }}
-              >
+              <div key={item.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(index * 0.04, 0.24)}s` }}>
                 <HistoryCard
                   item={item}
                   isExpanded={expandedId === item.id}
-                  onToggle={() =>
-                    setExpandedId(expandedId === item.id ? null : item.id)
-                  }
+                  onToggle={() => setExpandedId(expandedId === item.id ? null : item.id)}
                   onDelete={() => handleDelete(item.id)}
                 />
               </div>
