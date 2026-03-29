@@ -23,6 +23,16 @@ export function Navbar({ variant = "app" }: NavbarProps) {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUserEmail(user?.email ?? null);
     });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -49,8 +59,11 @@ export function Navbar({ variant = "app" }: NavbarProps) {
 
   async function handleLogout() {
     const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
+    await supabase.auth.signOut({ scope: "local" });
+    setUserEmail(null);
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+    router.replace("/");
     router.refresh();
   }
 
