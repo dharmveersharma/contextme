@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { icons } from "./icons";
 
 interface NavbarProps {
@@ -10,6 +12,22 @@ interface NavbarProps {
 
 export function Navbar({ variant = "app" }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserEmail(user?.email ?? null);
+    });
+  }, []);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   const linkClass = (href: string) =>
     pathname === href
@@ -33,10 +51,40 @@ export function Navbar({ variant = "app" }: NavbarProps) {
             <Link href="/history" className="hover:text-white transition-colors">History</Link>
           </div>
           <div className="flex items-center gap-2">
-            <button className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5">Log In</button>
-            <Link href="/extract" className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium">
-              Get Started Free
-            </Link>
+            {userEmail ? (
+              <>
+                <span className="text-[10px] text-gray-500 hidden sm:inline truncate max-w-[120px]">
+                  {userEmail}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5"
+                >
+                  Logout
+                </button>
+                <Link
+                  href="/extract"
+                  className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium"
+                >
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-xs text-gray-300 hover:text-white transition-colors px-3 py-1.5"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="text-xs bg-violet-600 hover:bg-violet-500 text-white px-4 py-1.5 rounded-full transition-colors font-medium"
+                >
+                  Get Started Free
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -56,6 +104,19 @@ export function Navbar({ variant = "app" }: NavbarProps) {
         <div className="flex items-center gap-4 text-xs">
           <Link href="/extract" className={linkClass("/extract")}>Extract</Link>
           <Link href="/history" className={linkClass("/history")}>History</Link>
+          {userEmail && (
+            <>
+              <span className="text-[10px] text-gray-500 hidden sm:inline truncate max-w-[120px]">
+                {userEmail}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createClient } from "@/lib/supabase/server";
 
 interface ExtractedInsights {
   title: string;
@@ -55,6 +56,16 @@ function extractTextFromHtml(html: string): string {
 
 export async function POST(request: Request) {
   try {
+    // 0. Auth check — protect OpenAI credits
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Authentication required. Please log in." },
+        { status: 401 }
+      );
+    }
+
     // 1. Parse request body
     const body = await request.json();
     const { url } = body;

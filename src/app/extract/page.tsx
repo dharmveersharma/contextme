@@ -212,9 +212,13 @@ export default function ExtractPage() {
 
       if (data.success) {
         setResult(data.data);
-        saveToHistory(data.data);
-        setSavedToast(true);
-        setTimeout(() => setSavedToast(false), 3000);
+        try {
+          await saveToHistory(data.data);
+          setSavedToast(true);
+          setTimeout(() => setSavedToast(false), 3000);
+        } catch {
+          // Save failed silently — user can still see results
+        }
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }

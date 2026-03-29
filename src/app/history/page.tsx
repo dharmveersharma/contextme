@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { HistoryItem } from "@/lib/types";
+import { HistoryItem, ExtractedInsights } from "@/lib/types";
 import {
   getHistory,
-  searchHistory,
   deleteFromHistory,
   clearHistory,
   formatRelativeTime,
@@ -13,6 +12,17 @@ import {
 import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
 import { icons } from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
+
+// Helper: convert HistoryItem (snake_case) to ExtractedInsights (camelCase) for export functions
+function toExtractedInsights(item: HistoryItem): ExtractedInsights {
+  return {
+    title: item.title,
+    summary: item.summary,
+    keyPoints: item.key_points,
+    tags: item.tags,
+    sourceUrl: item.source_url,
+  };
+}
 
 // ─── History Card ───────────────────────────────────────────
 function HistoryCard({
@@ -29,6 +39,8 @@ function HistoryCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
 
+  const exportData = toExtractedInsights(item);
+
   return (
     <div className="rounded-xl border border-violet-500/15 bg-gradient-to-br from-violet-500/5 to-transparent transition-all hover:border-violet-500/25 hover:bg-violet-500/[0.03]">
       {/* Card Header — always visible */}
@@ -43,7 +55,7 @@ function HistoryCard({
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex items-center gap-1 text-gray-600 text-[10px]">
               {icons.clock("w-3 h-3")}
-              <span>{formatRelativeTime(item.extractedAt)}</span>
+              <span>{formatRelativeTime(item.created_at)}</span>
             </div>
             {isExpanded
               ? icons.chevronUp("w-4 h-4 text-gray-500")
@@ -81,13 +93,13 @@ function HistoryCard({
           </div>
 
           {/* Key Insights — numbered badges */}
-          {item.keyPoints.length > 0 && (
+          {item.key_points.length > 0 && (
             <div>
               <p className="text-[10px] text-violet-400 uppercase tracking-wider mb-1.5 font-medium">
                 Key Insights
               </p>
               <div className="space-y-2">
-                {item.keyPoints.map((point, i) => (
+                {item.key_points.map((point, i) => (
                   <div
                     key={i}
                     className="flex items-start gap-2.5 p-2 rounded-lg bg-white/[0.02] border-l-2 border-violet-500/25"
@@ -126,13 +138,13 @@ function HistoryCard({
           <div className="flex items-center gap-1.5 pt-1">
             {icons.externalLink("w-3 h-3 text-gray-500 shrink-0")}
             <a
-              href={item.sourceUrl}
+              href={item.source_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[11px] text-gray-500 hover:text-violet-400 transition-colors truncate"
               onClick={(e) => e.stopPropagation()}
             >
-              {item.sourceUrl}
+              {item.source_url}
             </a>
           </div>
 
@@ -141,7 +153,7 @@ function HistoryCard({
             <div className="flex items-center gap-2">
               <button
                 onClick={async () => {
-                  const ok = await copyToClipboard(item);
+                  const ok = await copyToClipboard(exportData);
                   if (ok) {
                     setCopiedToast(true);
                     setTimeout(() => setCopiedToast(false), 2000);
@@ -154,7 +166,7 @@ function HistoryCard({
                 Copy
               </button>
               <button
-                onClick={() => downloadAsMarkdown(item)}
+                onClick={() => downloadAsMarkdown(exportData)}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
                 title="Download as Markdown"
               >
@@ -162,7 +174,7 @@ function HistoryCard({
                 Markdown
               </button>
               <button
-                onClick={() => printAsPdf(item)}
+                onClick={() => printAsPdf(exportData)}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 hover:border-violet-500/30 text-gray-500 hover:text-violet-300 text-[10px] transition-all hover:bg-violet-500/5"
                 title="Download as PDF"
               >
@@ -261,7 +273,9 @@ export default function HistoryPage() {
 
   useEffect(() => {
     setMounted(true);
-    setItems(getHistory());
+    getHistory()
+      .then(setItems)
+      .catch((err) => console.error("Failed to load history:", err));
   }, []);
 
   // Collect all unique tags
@@ -271,37 +285,59 @@ export default function HistoryPage() {
     return Array.from(tagSet).sort();
   }, [items]);
 
-  // Apply search, tag filter, and sort
+  // Apply search, tag filter, and sort (all client-side on fetched items)
   const displayItems = useMemo(() => {
-    let result = searchQuery.trim() ? searchHistory(searchQuery) : items;
+    let result = items;
 
+    // Client-side text search
+    if (searchQuery.trim()) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title.toLowerCase().includes(lowerQuery) ||
+          item.summary.toLowerCase().includes(lowerQuery) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
+      );
+    }
+
+    // Tag filter
     if (selectedTag) {
       result = result.filter((item) =>
         item.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
       );
     }
 
+    // Sort order
     if (sortOrder === "oldest") {
       result = [...result].sort(
-        (a, b) => new Date(a.extractedAt).getTime() - new Date(b.extractedAt).getTime()
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     }
 
     return result;
   }, [searchQuery, items, selectedTag, sortOrder]);
 
-  function handleDelete(id: string) {
-    deleteFromHistory(id);
-    setItems(getHistory());
-    if (expandedId === id) setExpandedId(null);
+  async function handleDelete(id: string) {
+    try {
+      await deleteFromHistory(id);
+      const updated = await getHistory();
+      setItems(updated);
+      if (expandedId === id) setExpandedId(null);
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   }
 
-  function handleClearAll() {
-    clearHistory();
-    setItems([]);
-    setExpandedId(null);
-    setShowClearConfirm(false);
-    setSelectedTag(null);
+  async function handleClearAll() {
+    try {
+      await clearHistory();
+      setItems([]);
+      setExpandedId(null);
+      setShowClearConfirm(false);
+      setSelectedTag(null);
+    } catch (err) {
+      console.error("Failed to clear:", err);
+    }
   }
 
   // Pre-mount loading skeleton

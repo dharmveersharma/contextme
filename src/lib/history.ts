@@ -1,96 +1,74 @@
+import { createClient } from "@/lib/supabase/client";
 import { ExtractedInsights, HistoryItem } from "./types";
 
-const STORAGE_KEY = "contextme_history";
-
 /**
- * Save extracted insights to localStorage history.
- * Returns the created HistoryItem with id and timestamp.
+ * Save extracted insights to Supabase database.
+ * Maps camelCase (from API) to snake_case (DB columns).
  */
-export function saveToHistory(insights: ExtractedInsights): HistoryItem {
-  const item: HistoryItem = {
-    ...insights,
-    id: `ctx_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-    extractedAt: new Date().toISOString(),
-  };
+export async function saveToHistory(insights: ExtractedInsights): Promise<HistoryItem> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
 
-  try {
-    const existing = getHistory();
-    existing.unshift(item); // newest first
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-  } catch (error: unknown) {
-    // Handle quota exceeded or other localStorage errors
-    if (error instanceof DOMException && error.name === "QuotaExceededError") {
-      // Remove oldest items to make space, then retry
-      const existing = getHistory();
-      const trimmed = existing.slice(0, Math.max(existing.length - 10, 0));
-      trimmed.unshift(item);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-    }
-  }
+  const { data, error } = await supabase
+    .from("extractions")
+    .insert({
+      user_id: user.id,
+      title: insights.title,
+      summary: insights.summary,
+      key_points: insights.keyPoints,
+      tags: insights.tags,
+      source_url: insights.sourceUrl,
+    })
+    .select()
+    .single();
 
-  return item;
+  if (error) throw error;
+  return data as HistoryItem;
 }
 
 /**
- * Get all history items, sorted by newest first.
+ * Get all history items for the current user, sorted by newest first.
  */
-export function getHistory(): HistoryItem[] {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return [];
-    const items: HistoryItem[] = JSON.parse(data);
-    return items.sort(
-      (a, b) => new Date(b.extractedAt).getTime() - new Date(a.extractedAt).getTime()
-    );
-  } catch {
-    return [];
-  }
+export async function getHistory(): Promise<HistoryItem[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("extractions")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as HistoryItem[];
 }
 
 /**
- * Delete a single item from history by id.
+ * Delete a single extraction by id.
+ * RLS ensures user can only delete their own rows.
  */
-export function deleteFromHistory(id: string): void {
-  try {
-    const items = getHistory().filter((item) => item.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch {
-    // silently fail
-  }
+export async function deleteFromHistory(id: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("extractions")
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
 }
 
 /**
- * Clear all history items.
+ * Clear all extractions for the current user.
  */
-export function clearHistory(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // silently fail
-  }
-}
+export async function clearHistory(): Promise<void> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
 
-/**
- * Search history by title, summary, or tags.
- */
-export function searchHistory(query: string): HistoryItem[] {
-  const items = getHistory();
-  if (!query.trim()) return items;
+  const { error } = await supabase
+    .from("extractions")
+    .delete()
+    .eq("user_id", user.id);
 
-  const lowerQuery = query.toLowerCase();
-  return items.filter(
-    (item) =>
-      item.title.toLowerCase().includes(lowerQuery) ||
-      item.summary.toLowerCase().includes(lowerQuery) ||
-      item.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
-  );
-}
-
-/**
- * Get the total count of saved items.
- */
-export function getHistoryCount(): number {
-  return getHistory().length;
+  if (error) throw error;
 }
 
 /**
