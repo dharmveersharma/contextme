@@ -185,29 +185,40 @@ function HistoryCard({
 function EmptyState({ filtered }: { filtered: boolean }) {
   if (filtered) {
     return (
-      <div className="mx-auto max-w-xl text-center">
-        <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
-          {icons.search("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
-          <p className="text-base text-[#5d4e43]">No saved notes match that filter.</p>
-          <p className="mt-2 text-sm text-[#8a786a]">Try a different keyword or clear the selected tag.</p>
+      <div className="mx-auto max-w-xl text-center animate-fade-in-up">
+        <div className="rounded-[32px] border border-[rgba(79,70,229,0.08)] bg-[linear-gradient(150deg,rgba(255,255,255,0.98),rgba(238,240,255,0.4))] p-10 shadow-[0_12px_40px_rgba(28,25,23,0.04)]">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#eef0ff]">
+            {icons.search("w-8 h-8 text-[#4f46e5]")}
+          </div>
+          <p className="text-base font-medium text-[#1c1917]">Nothing found for that search.</p>
+          <p className="mt-2 text-sm leading-7 text-[#8a786a]">
+            Try different words or clear the filter to see everything you&apos;ve saved.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-xl text-center">
-      <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
-        {icons.brain("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
-        <p className="text-base text-[#5d4e43]">Your library is still empty.</p>
-        <p className="mt-2 text-sm text-[#8a786a]">Save your first article or note and it will show up here.</p>
+    <div className="mx-auto max-w-xl text-center animate-fade-in-up">
+      <div className="rounded-[32px] border border-[rgba(79,70,229,0.08)] bg-[linear-gradient(150deg,rgba(255,255,255,0.98)_0%,rgba(238,240,255,0.45)_60%,rgba(255,243,224,0.35)_100%)] p-10 shadow-[0_12px_40px_rgba(28,25,23,0.04)]">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#eef0ff]">
+          {icons.brain("w-8 h-8 text-[#4f46e5] animate-breathe")}
+        </div>
+        <h3 className="text-base font-semibold text-[#1c1917]">Your library is ready to be filled.</h3>
+        <p className="mx-auto mt-2 max-w-xs text-sm leading-7 text-[#8a786a]">
+          Every article, idea, or page you save will find a quiet home here — ready to resurface when you need it most.
+        </p>
         <Link
           href="/extract"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
+          className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#4f46e5] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca]"
         >
           {icons.sparkles("w-4 h-4")}
-          Extract Your First URL
+          Save Your First Note
         </Link>
+        <p className="mt-5 text-xs italic text-[#a8a29e]">
+          &ldquo;A second brain doesn&apos;t have to be a second job.&rdquo;
+        </p>
       </div>
     </div>
   );
@@ -315,13 +326,18 @@ export default function HistoryPage() {
             <div>
               <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">Your library</p>
               <h1 className="mt-3 text-3xl font-semibold text-[#2f241d] sm:text-4xl">
-                A warmer archive for what you want to remember.
+                A calm home for what you want to remember.
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-8 text-[#6f5e52]">
                 {items.length === 0
-                  ? "No saved notes yet."
+                  ? "Your library is ready — save your first note anytime."
                   : `${items.length} saved item${items.length === 1 ? "" : "s"} ready to revisit.`}
               </p>
+              {items.length > 0 && (
+                <p className="mt-3 text-sm italic text-[#a8a29e]">
+                  Your past reading is a gift to your future self.
+                </p>
+              )}
             </div>
 
             {items.length > 0 && (

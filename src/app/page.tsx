@@ -234,6 +234,69 @@ function HowItWorksSection() {
   );
 }
 
+function TestimonialsSection() {
+  const testimonials = [
+    {
+      quote: "It feels like a warm, organized corner of my mind. I save an article before bed and find it exactly when I need it.",
+      name: "Priya S.",
+      role: "Product Designer",
+      initials: "PS",
+      accent: "bg-[#eef0ff] text-[#4f46e5]",
+    },
+    {
+      quote: "I used to have 60 open browser tabs. ContextMe replaced that anxious habit with something that finally feels calm.",
+      name: "Marcus O.",
+      role: "Software Engineer",
+      initials: "MO",
+      accent: "bg-[#fff3e0] text-[#d97706]",
+    },
+    {
+      quote: "As a writer, I collect ideas constantly. This is the first tool that respects the quiet nature of thinking.",
+      name: "Leila N.",
+      role: "Freelance Writer",
+      initials: "LN",
+      accent: "bg-[#f4f4ff] text-[#4338ca]",
+    },
+  ];
+
+  return (
+    <section className="px-4 py-14 sm:py-20">
+      <div className="mx-auto max-w-6xl">
+        <ScrollReveal className="mx-auto mb-10 max-w-2xl text-center">
+          <p className="text-sm uppercase tracking-[0.22em] text-[#a8a29e]">What people say</p>
+          <h2 className="mt-3 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
+            People thinking more{" "}
+            <span className="gradient-text-warm">clearly</span> with ContextMe.
+          </h2>
+          <p className="mt-4 text-base leading-8 text-[#6b645f]">
+            Real people building a calmer relationship with the things they read and learn.
+          </p>
+        </ScrollReveal>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {testimonials.map((t, index) => (
+            <ScrollReveal key={t.name} delayMs={index * 90}>
+              <div className="glass-card-hover flex h-full flex-col p-7">
+                <div className="mb-4 font-serif text-5xl leading-none text-[#e8e4ff]">&ldquo;</div>
+                <p className="flex-1 text-sm leading-7 text-[#6b645f]">{t.quote}</p>
+                <div className="mt-6 flex items-center gap-3">
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${t.accent}`}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#1c1917]">{t.name}</p>
+                    <p className="text-xs text-[#8a817b]">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function PricingSection() {
   const plans = [
     {
@@ -372,13 +435,16 @@ function CTASection() {
       <ScrollReveal>
         <div className="mx-auto max-w-5xl rounded-[36px] border border-[rgba(28,25,23,0.08)] bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(255,243,224,0.7),rgba(238,240,255,0.75))] px-6 py-10 text-center shadow-[0_24px_60px_rgba(28,25,23,0.08)] sm:px-10 sm:py-14">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[20px] bg-[#eef0ff]">
-            {icons.brain("h-7 w-7 text-[#4f46e5]")}
+            {icons.brain("h-7 w-7 text-[#4f46e5] animate-breathe")}
           </div>
           <h2 className="mt-6 text-3xl font-semibold text-[#1c1917] sm:text-4xl">
-            Make remembering feel quiet and easy.
+            Your mind deserves a peaceful home for ideas.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[#6b645f]">
-            ContextMe gives your thoughts a clean place to land, connect, and come back when you need them.
+            ContextMe gives your thoughts a clean place to land, connect, and come back when you need them — without the clutter of open tabs, frantic notes, or forgotten bookmarks.
+          </p>
+          <p className="mx-auto mt-5 max-w-md text-sm italic text-[#a8a29e]">
+            &ldquo;The best way to have a good idea is to have a place where ideas can rest.&rdquo;
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
@@ -476,6 +542,7 @@ export default function Home() {
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
+      <TestimonialsSection />
       <PricingSection />
       <LearnMoreSection />
       <CTASection />

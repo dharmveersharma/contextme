@@ -11,6 +11,9 @@ import { Navbar } from "@/components/Navbar";
 function LoadingSkeleton() {
   return (
     <div className="mx-auto mt-8 max-w-3xl space-y-4 px-4">
+      <p className="text-center text-sm text-[#a8a29e] animate-fade-in-up">
+        Gently reading the page and gathering the best ideas for you&hellip;
+      </p>
       {[1, 2, 3].map((card) => (
         <div key={card} className="glass-card p-5 animate-fade-in-up">
           <div className="h-3 w-24 skeleton-block rounded mb-4" />
@@ -199,6 +202,9 @@ export default function ExtractPage() {
           <p className="mt-4 text-base leading-8 text-[#6f5e52] animate-fade-in-up stagger-2">
             Paste a URL and ContextMe will pull out the important ideas, tags, and takeaways in a format that feels easy to revisit later.
           </p>
+          <p className="mt-2 text-sm text-[#a8a29e] animate-fade-in-up stagger-3">
+            What&apos;s worth keeping today?
+          </p>
 
           <form onSubmit={handleExtract} className="mt-8 flex flex-col gap-3 sm:flex-row animate-fade-in-up stagger-3">
             <div className="relative flex-1">
@@ -254,14 +260,42 @@ export default function ExtractPage() {
       {result && <InsightResults data={result} />}
 
       {!loading && !result && !error && (
-        <div className="mx-auto mt-10 max-w-3xl px-4 pb-12 text-center animate-fade-in-up">
-          <div className="rounded-[30px] border border-dashed border-[rgba(114,84,62,0.16)] bg-white/40 p-10">
-            {icons.brain("w-10 h-10 text-[#4f46e5] mx-auto mb-4")}
-            <p className="text-base text-[#5d4e43]">Your extracted notes will appear here.</p>
-            <p className="mt-2 text-sm text-[#8a786a]">
-              Try a blog post, article, or reference page you want to keep in your second brain.
+        <div className="mx-auto mt-8 max-w-3xl px-4 pb-16 animate-fade-in-up">
+          {/* Warm welcome card */}
+          <div className="rounded-[32px] border border-[rgba(79,70,229,0.08)] bg-[linear-gradient(150deg,rgba(255,255,255,0.98)_0%,rgba(238,240,255,0.45)_60%,rgba(255,243,224,0.35)_100%)] p-10 text-center shadow-[0_12px_40px_rgba(28,25,23,0.05)]">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] bg-[#eef0ff]">
+              {icons.brain("w-10 h-10 text-[#4f46e5] animate-breathe")}
+            </div>
+            <h3 className="text-lg font-semibold text-[#1c1917]">Ready to capture something worth keeping?</h3>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-[#6b645f]">
+              Paste any link above. We&apos;ll quietly extract the key ideas, tags, and takeaways — so you can read less and remember more.
             </p>
+
+            {/* Suggestion chips */}
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
+              {[
+                "📰 A news article",
+                "📚 A blog post",
+                "🔬 A research paper",
+                "💡 An inspiring essay",
+              ].map((example) => (
+                <span
+                  key={example}
+                  className="rounded-full border border-[rgba(28,25,23,0.08)] bg-white px-4 py-2 text-xs text-[#6b645f]"
+                >
+                  {example}
+                </span>
+              ))}
+            </div>
           </div>
+
+          {/* Affirmation */}
+          <p className="mt-6 text-center text-xs italic text-[#a8a29e]">
+            &ldquo;Every saved note is a small gift to your future self.&rdquo;
+          </p>
+          <p className="mt-2 text-center text-xs text-[#c4bdb8]">
+            Your notes stay private — only you can see them.
+          </p>
         </div>
       )}
     </main>

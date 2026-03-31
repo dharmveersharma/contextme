@@ -202,3 +202,19 @@ textarea {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.07); opacity: 1; }
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.quote-accent {
+  border-left: 2px solid rgba(79, 70, 229, 0.18);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--muted);
+}
