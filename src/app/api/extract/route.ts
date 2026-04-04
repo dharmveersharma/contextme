@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createClient } from "@/lib/supabase/server";
+import {
+  isYouTubeUrl,
+  extractVideoId,
+  fetchYouTubeMetadata,
+  fetchYouTubeTranscript,
+} from "@/lib/youtube";
 
 interface ExtractedInsights {
   title: string;
@@ -95,6 +101,96 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    // ── YouTube branch ────────────────────────────────────────────────────────
+    if (isYouTubeUrl(url)) {
+      const videoId = extractVideoId(url);
+      if (!videoId) {
+        return NextResponse.json(
+          { success: false, error: "Could not extract video ID from this YouTube URL." },
+          { status: 400 }
+        );
+      }
+
+      // Fetch metadata and transcript in parallel
+      let transcript: string;
+      let metadata: { title: string; channelName: string; thumbnailUrl: string };
+
+      try {
+        [transcript, metadata] = await Promise.all([
+          fetchYouTubeTranscript(videoId),
+          fetchYouTubeMetadata(url),
+        ]);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "Failed to fetch video transcript.";
+        return NextResponse.json({ success: false, error: message }, { status: 400 });
+      }
+
+      // Call OpenAI with a video-aware prompt
+      const openai = new OpenAI({ apiKey });
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        max_tokens: 1500,
+        temperature: 0.3,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert content analyst. Given the transcript of a YouTube video, extract structured insights.
+
+Return a JSON object with exactly these fields:
+- "title": The main title or topic of the video (string) — use the actual video title if natural, otherwise derive from content
+- "summary": A detailed 4-6 sentence summary capturing the main argument, key findings, and conclusion. Be specific with names, numbers, and facts. (string)
+- "keyPoints": An array of 5-7 key insights or takeaways. Each must be a full, detailed sentence. Include specific data points or examples. (string[])
+- "tags": An array of 4-8 relevant lowercase topic tags (string[])
+
+Return ONLY valid JSON. No extra text or markdown.`,
+          },
+          {
+            role: "user",
+            content: `Video title: "${metadata.title}"\nChannel: "${metadata.channelName}"\n\nTranscript:\n${transcript}`,
+          },
+        ],
+      });
+
+      const aiResponse = completion.choices[0]?.message?.content;
+      if (!aiResponse) {
+        return NextResponse.json(
+          { success: false, error: "AI analysis failed. Please try again." },
+          { status: 500 }
+        );
+      }
+
+      let insights: {
+        title?: string;
+        summary?: string;
+        keyPoints?: string[];
+        tags?: string[];
+      };
+      try {
+        insights = JSON.parse(aiResponse);
+      } catch {
+        return NextResponse.json(
+          { success: false, error: "Failed to parse AI response. Please try again." },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          title: insights.title || metadata.title,
+          summary: insights.summary || "No summary available.",
+          keyPoints: insights.keyPoints || [],
+          tags: insights.tags || [],
+          sourceUrl: url, // real YouTube URL — renders as a proper link
+          channelName: metadata.channelName,
+        },
+      });
+    }
+    // ── End YouTube branch ────────────────────────────────────────────────────
 
     // 3. Fetch URL content with timeout
     const controller = new AbortController();

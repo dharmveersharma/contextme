@@ -7,6 +7,7 @@ import { saveToHistory } from "@/lib/history";
 import { copyToClipboard, downloadAsMarkdown, printAsPdf } from "@/lib/export";
 import { icons } from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
+import { isYouTubeUrl } from "@/lib/youtube";
 
 // ─── Loading Skeleton ────────────────────────────────────────
 function LoadingSkeleton({ label }: { label?: string }) {
@@ -42,8 +43,9 @@ function InsightResults({ data }: { data: ExtractedInsights }) {
     }
   }
 
-  // Distinguish a PDF source (pdf://filename.pdf) from a real URL
+  // Distinguish source type
   const isPdfSource = data.sourceUrl.startsWith("pdf://");
+  const isYouTubeSource = isYouTubeUrl(data.sourceUrl);
   const displaySource = isPdfSource
     ? data.sourceUrl.replace("pdf://", "")
     : data.sourceUrl;
@@ -52,15 +54,25 @@ function InsightResults({ data }: { data: ExtractedInsights }) {
     <div className="mx-auto mt-8 max-w-3xl space-y-4 px-4 pb-12">
       {/* Title card */}
       <div className="glass-card p-6 animate-fade-in-up">
-        <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">
-          {isPdfSource ? "Saved PDF" : "Saved page"}
-        </p>
+        <div className="flex items-center gap-2">
+          {isYouTubeSource && (
+            <span className="flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-[10px] font-medium text-red-500">
+              {icons.youtube("w-3 h-3")}
+              YouTube
+            </span>
+          )}
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#a8a29e]">
+            {isPdfSource ? "Saved PDF" : isYouTubeSource ? "Saved video" : "Saved page"}
+          </p>
+        </div>
         <h2 className="mt-2 text-2xl font-semibold leading-tight text-[#2f241d]">
           {data.title}
         </h2>
         <div className="mt-3 flex items-center gap-2">
           {isPdfSource
             ? icons.fileText("w-4 h-4 text-[#8a817b] shrink-0")
+            : isYouTubeSource
+            ? icons.youtube("w-4 h-4 text-red-400 shrink-0")
             : icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
           {isPdfSource ? (
             <span className="truncate text-sm text-[#8a817b]">{displaySource}</span>
@@ -368,35 +380,44 @@ export default function ExtractPage() {
 
           {/* ── URL input ────────────────────────────────────── */}
           {mode === "url" && (
-            <form
-              onSubmit={handleUrlExtract}
-              className="mt-4 flex flex-col gap-3 sm:flex-row animate-fade-in-up"
-            >
-              <div className="relative flex-1">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  {icons.link("w-4 h-4 text-[#a8a29e]")}
+            <div className="mt-4 animate-fade-in-up">
+              {/* YouTube detection badge */}
+              {isYouTubeUrl(url) && (
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-red-100 bg-red-50 px-3 py-1.5 text-xs text-red-500 animate-fade-in-up">
+                  {icons.youtube("w-3.5 h-3.5")}
+                  YouTube detected — we&apos;ll read the transcript
                 </div>
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Paste a URL to save and summarize..."
-                  disabled={loading}
-                  className="w-full rounded-[24px] border border-[rgba(28,25,23,0.08)] bg-white py-3 pl-11 pr-4 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex items-center justify-center gap-2 rounded-[24px] bg-[#4f46e5] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca] disabled:cursor-not-allowed disabled:opacity-50"
+              )}
+              <form
+                onSubmit={handleUrlExtract}
+                className="flex flex-col gap-3 sm:flex-row"
               >
-                {loading ? (
-                  <>{icons.spinner("w-4 h-4 animate-spin")}<span>Extracting…</span></>
-                ) : (
-                  <>{icons.sparkles("w-4 h-4")}<span>Extract</span></>
-                )}
-              </button>
-            </form>
+                <div className="relative flex-1">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                    {icons.link("w-4 h-4 text-[#a8a29e]")}
+                  </div>
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="Paste a URL or YouTube link…"
+                    disabled={loading}
+                    className="w-full rounded-[24px] border border-[rgba(28,25,23,0.08)] bg-white py-3 pl-11 pr-4 text-sm text-[#1c1917] placeholder:text-[#a8a29e] transition-all focus:border-[rgba(79,70,229,0.2)] focus:ring-1 focus:ring-[rgba(79,70,229,0.14)] focus:outline-none disabled:opacity-50"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex items-center justify-center gap-2 rounded-[24px] bg-[#4f46e5] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#4338ca] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>{icons.spinner("w-4 h-4 animate-spin")}<span>Extracting…</span></>
+                  ) : (
+                    <>{icons.sparkles("w-4 h-4")}<span>Extract</span></>
+                  )}
+                </button>
+              </form>
+            </div>
           )}
 
           {/* ── PDF upload zone ──────────────────────────────── */}
@@ -497,6 +518,8 @@ export default function ExtractPage() {
           label={
             mode === "pdf"
               ? "Reading your PDF and pulling out the key ideas…"
+              : isYouTubeUrl(url)
+              ? "Fetching the video transcript and distilling the key ideas…"
               : "Gently reading the page and gathering the best ideas for you…"
           }
         />

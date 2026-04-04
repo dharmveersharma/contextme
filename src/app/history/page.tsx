@@ -100,6 +100,8 @@ function HistoryCard({
           <div className="mt-5 flex items-center gap-2">
             {item.source_url.startsWith("pdf://")
               ? icons.document("w-4 h-4 text-[#8a817b] shrink-0")
+              : item.source_url.includes("youtube.com") || item.source_url.includes("youtu.be")
+              ? icons.youtube("w-4 h-4 text-red-400 shrink-0")
               : icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
             {item.source_url.startsWith("pdf://") ? (
               <span className="truncate text-sm text-[#8a817b]">
