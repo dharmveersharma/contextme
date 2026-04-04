@@ -98,15 +98,23 @@ function HistoryCard({
           )}
 
           <div className="mt-5 flex items-center gap-2">
-            {icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
-            <a
-              href={item.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="truncate text-sm text-[#8a817b] transition-colors hover:text-[#4f46e5]"
-            >
-              {item.source_url}
-            </a>
+            {item.source_url.startsWith("pdf://")
+              ? icons.document("w-4 h-4 text-[#8a817b] shrink-0")
+              : icons.externalLink("w-4 h-4 text-[#8a817b] shrink-0")}
+            {item.source_url.startsWith("pdf://") ? (
+              <span className="truncate text-sm text-[#8a817b]">
+                {item.source_url.replace("pdf://", "")}
+              </span>
+            ) : (
+              <a
+                href={item.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-sm text-[#8a817b] transition-colors hover:text-[#4f46e5]"
+              >
+                {item.source_url}
+              </a>
+            )}
           </div>
 
           <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
